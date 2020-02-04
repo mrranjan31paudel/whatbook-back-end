@@ -1,5 +1,5 @@
 const JWT = require('jsonwebtoken');
-const { jwtSecret } = require('./../configs/config.structure');
+const { jwtAccessSecret } = require('./../configs/config.structure');
 
 
 const verifyUser = function (req, res, next) {
@@ -8,7 +8,7 @@ const verifyUser = function (req, res, next) {
   if (req.headers.authorization) {
     userToken = req.headers.authorization;
   }
-  JWT.verify(userToken, jwtSecret, function (err, result) {
+  JWT.verify(userToken, jwtAccessSecret, function (err, result) {
     if (err) {
       console.log(err);
       next({

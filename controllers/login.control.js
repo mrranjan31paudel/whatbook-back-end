@@ -1,6 +1,5 @@
 const JWT = require('jsonwebtoken');
-const { jwtSecret } = require('./../configs/config.structure');
-const RAND_TOKEN = require('rand-token');
+const {jwtRefreshSecret, jwtAccessSecret} = require('./../configs/config.structure');
 const DB_CONNECTION = require('./../configs/db-initiations/config.db.connect');
 const ROUTER = require('express').Router();
 const { decryptPassword } = require('./password.control');
@@ -25,15 +24,18 @@ ROUTER.route('/')
         console.log('pass in DB: ', resultData.password);
         decryptPassword(inputData.password, resultData.password, function (doesMatch) {
           if (doesMatch) {
-            let refreshTokenSecret = RAND_TOKEN.uid(16);
-            let refreshToken = JWT.sign({ id: resultData.id, email: resultData.email }, refreshTokenSecret, {expiresIn: 60});
-
-            let accessToken = JWT.sign({ id: resultData.id, email: resultData.email }, jwtSecret, {expiresIn: 15});
+            let jwtPayload = { 
+              id: resultData.id, email: resultData.email 
+            }
+            console.log(jwtAccessSecret, jwtRefreshSecret);
+            let refreshToken = JWT.sign(jwtPayload, jwtRefreshSecret, {expiresIn: 60});
+            let accessToken = JWT.sign(jwtPayload, jwtAccessSecret, {expiresIn: 15});
             
-            DB_CONNECTION.query(`UPDATE users SET refreshtoken='${refreshToken}' WHERE(id='${resultData.id}' AND email='${resultData.email}')`, function(err, result){
+            DB_CONNECTION.query(`INSERT INTO usersrefreshtokens (userid, refreshtoken) VALUES('${resultData.id}', '${refreshToken}')`, function(err, result){
               if(err) {
+                console.log('err: ', err);
                 next({
-                  msg: TOKEN_STORE_FAILED,
+                  msg: 'TOKEN_STORE_FAILED',
                   status: 500
                 });
               }

@@ -32,6 +32,7 @@ APP.use(function(req, res, next){   //Passes the Not Found(404) error to Error H
 });
 
 APP.use(function(err, req, res, next){  //(Error Handling Middleware): Sends response for every error of the app.
+    console.log(': ', err);
     res.status(err.status).send({
         msg: err.msg,
         code: err.code

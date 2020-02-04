@@ -7,13 +7,13 @@ const RENEW = require('./../middlewares/auth.renew');
 const LOGOUT = require('./../middlewares/auth.logout');
 
 ROUTER.use('/', function(req, res, next){   //For Home Page.
-    console.log('Inside API ');
-    next();
+  console.log('Inside API ');
+  next();
 });
 
-ROUTER.use('/login', TO_LOG_IN);
-
 ROUTER.use('/signup', TO_REGISTER);     //For links in registration.
+
+ROUTER.use('/login', TO_LOG_IN);
 
 ROUTER.use('/user', AUTHENTICATE, USER_ROUTE);    //For links in 'user component' further.
 

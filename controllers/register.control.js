@@ -1,5 +1,5 @@
 const DB_CONNECTION = require('./../configs/db-initiations/config.db.connect');
-const {encryptPassword} = require('./password.control');
+const {encryptPassword} = require('../services/password.service');
 const ROUTER = require('express').Router();
 
 ROUTER.route('/')

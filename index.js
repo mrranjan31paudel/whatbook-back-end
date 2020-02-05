@@ -2,7 +2,7 @@ const EXPRESS = require('express');
 const APP = EXPRESS();
 const LOGGER = require('morgan');
 const PATH = require('path');
-const API_ROUTES = require('./routes/api.routes');
+const API_ROUTES = require('./routes/api');
 const CREATE_USER_TABLE = require('./configs/db-initiations/config.db.createTable');
 const CORS = require('cors');
 
@@ -24,18 +24,18 @@ APP.use('/files', EXPRESS.static(PATH.join(__dirname, 'files')));   //To access 
 APP.use('/api', API_ROUTES);    //Directs to api routes and services.
 
 
-APP.use(function(req, res, next){   //Passes the Not Found(404) error to Error Handling Middleware.
+APP.use(function (req, res, next) {   //Passes the Not Found(404) error to Error Handling Middleware.
     next({
         status: 404,
         msg: 'Not Found!'
     });
 });
 
-APP.use(function(err, req, res, next){  //(Error Handling Middleware): Sends response for every error of the app.
-    console.log(': ', err);
+APP.use(function (err, req, res, next) {  //(Error Handling Middleware): Sends response for every error of the app.
+    console.log('err status: ', err.status);
     res.status(err.status).send();
 });
 
-APP.listen(PORT, function(){
+APP.listen(PORT, function () {
     console.log(`Server is listening at PORT: ${PORT}`);
 });

@@ -1,16 +1,17 @@
 const ROUTER = require('express').Router();
-const DB_CONNECTOIN = require('./../configs/db-initiations/config.db.connect');
+const logoutUser = require('./../services/auth.logout');
 
 ROUTER.route('/')
-  .post(function(req, res, next){
-    if(req.body.refreshToken){
+  .post(function (req, res, next) {
+    if (req.body.refreshToken) {
+
       const refreshToken = req.body.refreshToken;
-      DB_CONNECTOIN.query(`DELETE FROM usersrefreshtokens WHERE refreshtoken='${refreshToken}'`, function(err, result){
-        if(err) throw err;
-        res.send({
-          msg: 'logged Out'
-        });
-      })
+      logoutUser(refreshToken, function (serviceResult) {
+        if (serviceResult.err) {
+          return next(serviceResult.err);
+        }
+        res.send(serviceResult.data);
+      });
     }
   })
 

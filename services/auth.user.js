@@ -7,7 +7,15 @@ function authenticateUser(accessToken, callBackMiddleware) {
       if (err.name === 'TokenExpiredError') {
         return callBackMiddleware({
           err: {
-            status: 403
+            status: 401,
+            msg: err.name
+          }
+        });
+      }
+      else {
+        return callBackMiddleware({
+          err: {
+            status: 400
           }
         });
       }

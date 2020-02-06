@@ -33,7 +33,15 @@ APP.use(function (req, res, next) {   //Passes the Not Found(404) error to Error
 
 APP.use(function (err, req, res, next) {  //(Error Handling Middleware): Sends response for every error of the app.
     console.log('err status: ', err.status);
-    res.status(err.status).send();
+    if (err.status === 401 && err.msg === 'TokenExpiredError') {
+        res.status(err.status).send({
+            msg: err.msg
+        });
+    }
+    else {
+        res.status(err.status).send();
+    }
+
 });
 
 APP.listen(PORT, function () {

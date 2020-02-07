@@ -20,8 +20,8 @@ function loginService(inputUserData, callController) {
             email: user.email
           }
 
-          let refreshToken = JWT.sign(jwtPayload, jwtRefreshSecret, { expiresIn: 60 });
-          let accessToken = JWT.sign(jwtPayload, jwtAccessSecret, { expiresIn: 15 });
+          let refreshToken = JWT.sign(jwtPayload, jwtRefreshSecret, { expiresIn: 300 });
+          let accessToken = JWT.sign(jwtPayload, jwtAccessSecret, { expiresIn: 60 });
 
           query.storeRefreshToken(user.id, refreshToken, function (queryResponse) {
             if (queryResponse.err) {

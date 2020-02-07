@@ -24,7 +24,7 @@ function checkUserExistance(user, returnQueryResponse) {
 }
 
 function storeRefreshToken(userid, refreshToken, returnQueryResponse) {
-  DB_CONNECTION.query(`INSERT INTO usersrefreshtokens (userid, refreshtoken) VALUES('${userid}', '${refreshToken}')`, function (err, result) {
+  DB_CONNECTION.query(`INSERT INTO user_refresh_tokens (userid, refreshtoken) VALUES('${userid}', '${refreshToken}')`, function (err, result) {
     if (err) {
       return returnQueryResponse({
         err: {

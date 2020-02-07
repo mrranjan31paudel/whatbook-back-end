@@ -31,8 +31,8 @@ function renewTokens(refreshToken, callBackMiddleware) {
         }
       }
       else {
-        let newAccessToken = JWT.sign({ id: jwtResult.id, email: jwtResult.email }, jwtAccessSecret, { expiresIn: 15 });
-        let newRefreshToken = JWT.sign({ id: jwtResult.id, email: jwtResult.email }, jwtRefreshSecret, { expiresIn: 60 });
+        let newAccessToken = JWT.sign({ id: jwtResult.id, email: jwtResult.email }, jwtAccessSecret, { expiresIn: 60 });
+        let newRefreshToken = JWT.sign({ id: jwtResult.id, email: jwtResult.email }, jwtRefreshSecret, { expiresIn: 300 });
 
         query.storeNewRefreshToken(newRefreshToken, refreshToken, function (queryResponse) {
           if (queryResponse.err) {

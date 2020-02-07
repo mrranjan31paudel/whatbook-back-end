@@ -6,7 +6,7 @@ const users = {
   password: ''
 }
 
-const usersrefreshtokens = {
+const user_refresh_tokens = {
   sn: '',
   userid: '',
   refreshtoken: ''
@@ -19,4 +19,4 @@ const usersposts = {
   datetime: ''
 }
 
-module.exports = {users, usersrefreshtokens, usersposts};
+module.exports = { users, user_refresh_tokens, usersposts };

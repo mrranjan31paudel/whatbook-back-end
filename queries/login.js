@@ -1,4 +1,4 @@
-const DB_CONNECTION = require('../configs/db-initiations/config.db.connect');
+const DB_CONNECTION = require('./../configs/db-initiations/config.db.connect');
 
 function checkUserExistance(user, returnQueryResponse) {
   DB_CONNECTION.query(`SELECT id, email, password FROM users WHERE (email='${user.email}')`, function (err, result) {

@@ -45,4 +45,34 @@ function getUserStories(user, returnQueryResponse) {
   });
 }
 
-module.exports = { getUserHomeDetails, postUserStatus, getUserStories };
+function saveComment(user, data, returnQueryResponse) {
+  let dateTime = currentDate.getCurrentDate();
+
+  dbConnection.query(`INSERT INTO user_comments (postid, userid, comment, date_time) VALUES ('${data.postId}', '${user.id}', '${data.commentText}', '${dateTime}')`, function (err, result) {
+    if (err) {
+      return returnQueryResponse({
+        err: {
+          status: 400
+        }
+      });
+    }
+    returnQueryResponse({ msg: 'SUCCESS' });
+  });
+}
+
+function getUserComments(user, postId, returnQueryResponse) {
+  dbConnection.query(`SELECT user_comments.id, users.name, user_comments.comment, user_comments.date_time FROM users INNER JOIN user_comments ON users.id=user_comments.userid WHERE (user_comments.postid='${postId}') ORDER BY date_time`, function (err, result) {
+    if (err) {
+      console.log('get comments error: ', err);
+      return returnQueryResponse({
+        err: {
+          status: 400
+        }
+      });
+    }
+    console.log('get comments result: ', result);
+    returnQueryResponse(result);
+  });
+}
+
+module.exports = { getUserHomeDetails, postUserStatus, getUserStories, saveComment, getUserComments };

@@ -7,7 +7,7 @@ const CREATE_USER_TABLE = require('./configs/db-initiations/config.db.createTabl
 const CORS = require('cors');
 
 const PORT = 9090;
-
+//afsd
 CREATE_USER_TABLE.createTable();    //Creates table if doesnt exist.
 APP.use(LOGGER('dev'));
 

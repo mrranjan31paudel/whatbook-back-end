@@ -45,4 +45,40 @@ function getComments(user, postId, callController) {
   });
 }
 
-module.exports = { getUserDetails, postUserStatus, getNewsFeed, postComment, getComments };
+function editPost(user, data, callController) {
+  query.updateUserPost(user, data, function (queryResponse) {
+    if (queryResponse.err) {
+      return callController({ err: queryResponse.err });
+    }
+    callController(queryResponse);
+  })
+}
+
+function editComment(user, data, callController) {
+  query.updateUserComment(user, data, function (queryResponse) {
+    if (queryResponse.err) {
+      return callController({ err: queryResponse.err });
+    }
+    callController(queryResponse);
+  })
+}
+
+function deletePost(user, data, callController) {
+  query.deleteUserPost(user, data, function (queryResponse) {
+    if (queryResponse.err) {
+      return callController({ err: queryResponse.err });
+    }
+    callController(queryResponse);
+  })
+}
+
+function deleteComment(user, data, callController) {
+  query.deleteUserComment(user, data, function (queryResponse) {
+    if (queryResponse.err) {
+      return callController({ err: queryResponse.err });
+    }
+    callController(queryResponse);
+  })
+}
+
+module.exports = { getUserDetails, postUserStatus, getNewsFeed, postComment, getComments, editPost, editComment, deletePost, deleteComment };

@@ -2,8 +2,7 @@ const dbConnection = require('./../configs/db-initiations/config.db.connect');
 const currentDate = require('./../utils/currentDate');
 
 function getUserHomeDetails(user, returnQueryResponse) {
-  console.log('user: ', user);
-  dbConnection.query(`SELECT name, dob, email FROM users WHERE (id='${user.id}' AND email='${user.email}')`, function (err, result) {
+  dbConnection.query(`SELECT id, name, dob, email FROM users WHERE (id='${user.id}' AND email='${user.email}')`, function (err, result) {
     if (err) {
       return returnQueryResponse({
         err: {
@@ -32,7 +31,7 @@ function postUserStatus(user, postData, returnQueryResponse) {
 }
 
 function getUserStories(user, returnQueryResponse) {
-  dbConnection.query(`SELECT user_posts.id, users.name, user_posts.date_time, user_posts.content FROM users INNER JOIN user_posts ON users.id=user_posts.userid ORDER BY date_time DESC`, function (err, result) {
+  dbConnection.query(`SELECT user_posts.id, user_posts.userid, users.name, user_posts.date_time, user_posts.content FROM users INNER JOIN user_posts ON users.id=user_posts.userid ORDER BY date_time DESC`, function (err, result) {
     if (err) {
       return returnQueryResponse({
         err: {
@@ -40,7 +39,6 @@ function getUserStories(user, returnQueryResponse) {
         }
       });
     }
-    console.log(result);
     returnQueryResponse(result);
   });
 }
@@ -61,18 +59,77 @@ function saveComment(user, data, returnQueryResponse) {
 }
 
 function getUserComments(user, postId, returnQueryResponse) {
-  dbConnection.query(`SELECT user_comments.id, users.name, user_comments.comment, user_comments.date_time FROM users INNER JOIN user_comments ON users.id=user_comments.userid WHERE (user_comments.postid='${postId}') ORDER BY date_time`, function (err, result) {
+  dbConnection.query(`SELECT user_comments.id, user_comments.userid, users.name, user_comments.comment, user_comments.date_time FROM users INNER JOIN user_comments ON users.id=user_comments.userid WHERE (user_comments.postid='${postId}') ORDER BY date_time`, function (err, result) {
     if (err) {
-      console.log('get comments error: ', err);
       return returnQueryResponse({
         err: {
           status: 400
         }
       });
     }
-    console.log('get comments result: ', result);
     returnQueryResponse(result);
   });
 }
 
-module.exports = { getUserHomeDetails, postUserStatus, getUserStories, saveComment, getUserComments };
+function updateUserPost(user, postData, returnQueryResponse) {
+  dbConnection.query(`UPDATE user_posts SET content='${postData.newPostText}' WHERE (userid='${user.id}' AND id='${postData.postId}')`, function (err, result) {
+    if (err) {
+      return returnQueryResponse({
+        err: {
+          status: 400
+        }
+      });
+    }
+    returnQueryResponse({ msg: 'SUCCESS' });
+  });
+}
+
+function updateUserComment(user, commentData, returnQueryResponse) {
+  dbConnection.query(`UPDATE user_comments SET comment='${commentData.newCommentText}' WHERE (userid='${user.id}' AND postid='${commentData.postId}' AND id='${commentData.commentId}')`, function (err, result) {
+    if (err) {
+      return returnQueryResponse({
+        err: {
+          status: 400
+        }
+      });
+    }
+    returnQueryResponse({ msg: 'SUCCESS' });
+  });
+}
+
+function deleteUserPost(user, postData, returnQueryResponse) {
+  dbConnection.query(`DELETE FROM user_comments WHERE (postid='${postData.postId}')`, function (err, result) {
+    if (err) {
+      return returnQueryResponse({
+        err: {
+          status: 400
+        }
+      });
+    }
+    dbConnection.query(`DELETE FROM user_posts WHERE (id='${postData.postId}' AND userid='${user.id}')`, function (err, result) {
+      if (err) {
+        return returnQueryResponse({
+          err: {
+            status: 400
+          }
+        });
+      }
+      returnQueryResponse({ msg: 'SUCCESS' });
+    });
+  });
+}
+
+function deleteUserComment(user, commentData, returnQueryResponse) {
+  dbConnection.query(`DELETE FROM user_comments WHERE (id='${commentData.commentId}' AND (userid='${commentData.userId}' OR (SELECT user_posts.userid FROM user_posts WHERE (user_posts.userid='${commentData.postOwnerId}' AND user_posts.id='${commentData.postId}'))))`, function (err, result) {
+    if (err) {
+      return returnQueryResponse({
+        err: {
+          status: 400
+        }
+      });
+    }
+    returnQueryResponse({ msg: 'SUCCESS' });
+  });
+}
+
+module.exports = { getUserHomeDetails, postUserStatus, getUserStories, saveComment, getUserComments, updateUserPost, updateUserComment, deleteUserPost, deleteUserComment };

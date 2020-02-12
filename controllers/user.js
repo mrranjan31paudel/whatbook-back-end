@@ -17,6 +17,22 @@ ROUTER.route('/')
       }
       res.send(serviceResult);
     })
+  })
+  .put(function (req, res, next) {
+    userService.editPost(res.user, req.body, function (serviceResult) {
+      if (serviceResult.err) {
+        return next(serviceResult.err);
+      }
+      res.send(serviceResult);
+    })
+  })
+  .delete(function (req, res, next) {
+    userService.deletePost(res.user, req.query, function (serviceResult) {
+      if (serviceResult.err) {
+        return next(serviceResult.err);
+      }
+      res.send(serviceResult);
+    })
   });
 
 ROUTER.route('/feeds')
@@ -46,6 +62,23 @@ ROUTER.route('/comment')
       }
       res.send(serviceResult);
     });
+  })
+  .put(function (req, res, next) {
+    userService.editComment(res.user, req.body, function (serviceResult) {
+      if (serviceResult.err) {
+        return next(serviceResult.err);
+      }
+      res.send(serviceResult);
+    })
+  })
+  .delete(function (req, res, next) {
+    userService.deleteComment(res.user, req.query, function (serviceResult) {
+      if (serviceResult.err) {
+        return next(serviceResult.err);
+      }
+      res.send(serviceResult);
+    })
   });
+
 
 module.exports = ROUTER;

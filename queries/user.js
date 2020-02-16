@@ -45,21 +45,34 @@ function getUserStories(user, returnQueryResponse) {
 
 function saveComment(user, data, returnQueryResponse) {
   let dateTime = currentDate.getCurrentDate();
-
-  dbConnection.query(`INSERT INTO user_comments (postid, userid, comment, date_time) VALUES ('${data.postId}', '${user.id}', '${data.commentText}', '${dateTime}')`, function (err, result) {
-    if (err) {
-      return returnQueryResponse({
-        err: {
-          status: 400
-        }
-      });
-    }
-    returnQueryResponse({ msg: 'SUCCESS' });
-  });
+  if (data.parentCommentId) {
+    dbConnection.query(`INSERT INTO user_comments (postid, userid, comment, date_time, parent_reply_id) VALUES ('${data.parentPostId}', '${user.id}', '${data.text}', '${dateTime}', '${data.parentCommentId}')`, function (err, result) {
+      if (err) {
+        return returnQueryResponse({
+          err: {
+            status: 400
+          }
+        });
+      }
+      returnQueryResponse({ msg: 'SUCCESS' });
+    });
+  }
+  else {
+    dbConnection.query(`INSERT INTO user_comments (postid, userid, comment, date_time) VALUES ('${data.parentPostId}', '${user.id}', '${data.text}', '${dateTime}')`, function (err, result) {
+      if (err) {
+        return returnQueryResponse({
+          err: {
+            status: 400
+          }
+        });
+      }
+      returnQueryResponse({ msg: 'SUCCESS' });
+    });
+  }
 }
 
 function getUserComments(user, postId, returnQueryResponse) {
-  dbConnection.query(`SELECT user_comments.id, user_comments.userid, users.name, user_comments.comment, user_comments.date_time FROM users INNER JOIN user_comments ON users.id=user_comments.userid WHERE (user_comments.postid='${postId}') ORDER BY date_time`, function (err, result) {
+  dbConnection.query(`SELECT user_comments.id, user_comments.userid, users.name, user_comments.comment, user_comments.date_time, user_comments.parent_reply_id FROM users INNER JOIN user_comments ON users.id=user_comments.userid WHERE (user_comments.postid='${postId}') ORDER BY date_time`, function (err, result) {
     if (err) {
       return returnQueryResponse({
         err: {
@@ -74,6 +87,7 @@ function getUserComments(user, postId, returnQueryResponse) {
 function updateUserPost(user, postData, returnQueryResponse) {
   dbConnection.query(`UPDATE user_posts SET content='${postData.newPostText}' WHERE (userid='${user.id}' AND id='${postData.postId}')`, function (err, result) {
     if (err) {
+      console.log('post update error: ', err);
       return returnQueryResponse({
         err: {
           status: 400

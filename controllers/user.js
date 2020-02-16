@@ -56,6 +56,7 @@ ROUTER.route('/comment')
   })
   .post(function (req, res, next) {
     const inputData = req.body;
+    console.log('comment input: ', inputData);
     userService.postComment(res.user, inputData, function (serviceResult) {
       if (serviceResult.err) {
         return next(serviceResult.err);

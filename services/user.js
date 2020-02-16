@@ -1,4 +1,5 @@
 const query = require('./../queries/user');
+const manageNestedReplies = require('./../utils/replyManager');
 
 function getUserDetails(user, callController) {
   query.getUserHomeDetails(user, function (queryResponse) {
@@ -41,7 +42,9 @@ function getComments(user, postId, callController) {
     if (queryResponse.err) {
       return callController({ err: queryResponse.err });
     }
-    callController(queryResponse);
+    let managedList = [];
+    manageNestedReplies(queryResponse, managedList);
+    callController(managedList);
   });
 }
 

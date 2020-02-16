@@ -14,7 +14,7 @@ function createTable() {
         if (err) throw err;
     });
 
-    DB_CONNECTION.query('CREATE TABLE IF NOT EXISTS user_comments (id INT AUTO_INCREMENT, postid INT, userid INT, comment VARCHAR(255), date_time DATETIME, PRIMARY KEY (id), INDEX (postid), INDEX (userid), FOREIGN KEY (postid) REFERENCES user_posts(id), FOREIGN KEY (userid) REFERENCES users(id) )', function (err, result) {
+    DB_CONNECTION.query('CREATE TABLE IF NOT EXISTS user_comments (id INT AUTO_INCREMENT, postid INT, userid INT, comment VARCHAR(255), date_time DATETIME, parent_reply_id INT, PRIMARY KEY (id), INDEX (postid), INDEX (userid), FOREIGN KEY (postid) REFERENCES user_posts(id), FOREIGN KEY (userid) REFERENCES users(id) )', function (err, result) {
         if (err) throw err;
     });
 }

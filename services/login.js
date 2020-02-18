@@ -6,6 +6,7 @@ const query = require('./../queries/login');
 function loginService(inputUserData, callController) {
   query.checkUserExistance(inputUserData, function (queryResponse) {
     if (queryResponse.err) {
+      console.log('user not found: ', queryResponse.err);
       return callController({ err: queryResponse.err });
     }
     else {
@@ -40,7 +41,8 @@ function loginService(inputUserData, callController) {
         else {
           callController({
             err: {
-              status: 401
+              status: 401,
+              msg: 'INVALID_PASSWORD'
             }
           })
         }

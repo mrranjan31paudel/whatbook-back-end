@@ -16,7 +16,8 @@ function checkUserExistance(user, returnQueryResponse) {
     else {
       returnQueryResponse({
         err: {
-          status: 401
+          status: 404,
+          msg: 'USER_NOT_FOUND'
         }
       })
     }

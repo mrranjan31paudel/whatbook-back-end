@@ -6,7 +6,7 @@ function storeUserData(user, returnQueryResponse) {
       if (err.code === 'ER_DUP_ENTRY') {
         return returnQueryResponse({
           err: {
-            status: 401
+            status: 409
           }
         })
       }

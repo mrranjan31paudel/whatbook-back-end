@@ -8,7 +8,7 @@ function authenticateUser(accessToken, callBackMiddleware) {
         return callBackMiddleware({
           err: {
             status: 401,
-            msg: err.name
+            msg: 'TOKEN_EXPIRED'
           }
         });
       }

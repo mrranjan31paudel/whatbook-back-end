@@ -15,6 +15,27 @@ function getUserHomeDetails(user, returnQueryResponse) {
   });
 }
 
+function getUserProfileDetails(userId, returnQueryResponse) {
+  dbConnection.query(`SELECT id, name, dob, email FROM users WHERE (id='${userId}')`, function (err, result) {
+    if (err) {
+      return returnQueryResponse({
+        err: {
+          status: 400
+        }
+      });
+    }
+    const [userDetails] = result;
+    if (!userDetails) {
+      return returnQueryResponse({
+        err: {
+          status: 404
+        }
+      });
+    }
+    returnQueryResponse(userDetails);
+  })
+}
+
 function postUserStatus(user, postData, returnQueryResponse) {
   let dateTime = currentDate.getCurrentDate();
 
@@ -146,4 +167,4 @@ function deleteUserComment(user, commentData, returnQueryResponse) {
   });
 }
 
-module.exports = { getUserHomeDetails, postUserStatus, getUserStories, saveComment, getUserComments, updateUserPost, updateUserComment, deleteUserPost, deleteUserComment };
+module.exports = { getUserHomeDetails, getUserProfileDetails, postUserStatus, getUserStories, saveComment, getUserComments, updateUserPost, updateUserComment, deleteUserPost, deleteUserComment };

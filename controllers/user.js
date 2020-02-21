@@ -4,7 +4,7 @@ const ROUTER = require('express').Router();
 ROUTER.route('/')
   .get(function (req, res, next) {
     if (req.query.id) {
-      userService.getUserProfileDetails(res.user, req.query.id, function (serviceResult) {
+      userService.getUserProfileDetails(res.user, parseInt(req.query.id), function (serviceResult) {
         if (serviceResult.err) {
           return next(serviceResult.err);
         }
@@ -18,6 +18,26 @@ ROUTER.route('/')
         }
         res.send(serviceResult);
       })
+    }
+  });
+
+ROUTER.route('/post')
+  .get(function (req, res, next) {
+    if (req.query.id) {
+      userService.getUserPosts(res.user, req.query.id, function (serviceResult) {
+        if (serviceResult.err) {
+          return next(serviceResult.err);
+        }
+        res.send(serviceResult);
+      });
+    }
+    else {
+      userService.getNewsFeed(res.user, function (serviceResult) {
+        if (serviceResult.err) {
+          return next(serviceResult.err);
+        }
+        res.send(serviceResult);
+      });
     }
   })
   .post(function (req, res, next) {
@@ -45,26 +65,6 @@ ROUTER.route('/')
     })
   });
 
-ROUTER.route('/feeds')
-  .get(function (req, res, next) {
-    if (req.query.id) {
-      userService.getUserPosts(res.user, req.query.id, function (serviceResult) {
-        if (serviceResult.err) {
-          return next(serviceResult.err);
-        }
-        res.send(serviceResult);
-      });
-    }
-    else {
-      userService.getNewsFeed(res.user, function (serviceResult) {
-        if (serviceResult.err) {
-          return next(serviceResult.err);
-        }
-        res.send(serviceResult);
-      });
-    }
-  });
-
 ROUTER.route('/comment')
   .get(function (req, res, next) {
     userService.getComments(res.user, req.query.postId, function (serviceResult) {
@@ -76,7 +76,6 @@ ROUTER.route('/comment')
   })
   .post(function (req, res, next) {
     const inputData = req.body;
-    console.log('comment input: ', inputData);
     userService.postComment(res.user, inputData, function (serviceResult) {
       if (serviceResult.err) {
         return next(serviceResult.err);
@@ -101,5 +100,59 @@ ROUTER.route('/comment')
     })
   });
 
+ROUTER.route('/friend')
+  .get(function (req, res, next) {
+    userService.getFriendList(parseInt(req.query.userId), function (serviceResult) {
+      if (serviceResult.err) {
+        return next(serviceResult.err);
+      }
+      res.send(serviceResult);
+    });
+  })
+  .post(function (req, res, next) {
+    userService.saveFriendRequest(res.user.id, req.body.recieverId, function (serviceResult) {
+      if (serviceResult.err) {
+        return next(serviceResult.err);
+      }
+      res.send(serviceResult);
+    });
+  })
+  .put(function (req, res, next) {
+    userService.acceptFriendRequest(res.user.id, req.body.senderId, function (serviceResult) {
+      if (serviceResult.err) {
+        return next(serviceResult.err);
+      }
+      res.send(serviceResult);
+    });
+  })
+  .delete(function (req, res, next) {
+    userService.deleteFriendship(res.user.id, parseInt(req.query.friendId), function (serviceResult) {
+      if (serviceResult.err) {
+        return next(serviceResult.err);
+      }
+      res.send(serviceResult);
+    });
+  });
+
+ROUTER.route('/requests')
+  .get(function (req, res, next) {
+    userService.getRequestList(parseInt(req.query.userId), function (serviceResult) {
+      if (serviceResult.err) {
+        return next(serviceResult.err);
+      }
+      res.send(serviceResult);
+    });
+  });
+
+ROUTER.route('/people')
+  .get(function (req, res, next) {
+    userService.getPeopleList(parseInt(req.query.userId), function (serviceResult) {
+      if (serviceResult.err) {
+        return next(serviceResult.err);
+      }
+      console.log('SERVICE RESULT: ', serviceResult);
+      res.send(serviceResult);
+    });
+  });
 
 module.exports = ROUTER;

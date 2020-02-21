@@ -1,5 +1,5 @@
 const { encryptPassword } = require('./password');
-const query = require('../queries/register');
+const query = require('../queries/signup');
 
 function registerService(inputUserData, callController) {
   encryptPassword(inputUserData.password, function (hashedPassword) {

@@ -1,4 +1,4 @@
-const registerService = require('./../services/register');
+const registerService = require('../services/signup');
 const ROUTER = require('express').Router();
 
 ROUTER.route('/')

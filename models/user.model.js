@@ -7,16 +7,16 @@ const users = {
 }
 
 const user_refresh_tokens = {
-  sn: '',
+  id: '',
   userid: '',
   refreshtoken: ''
 }
 
-const usersposts = {
-  sn: '',
+const user_posts = {
+  id: '',
   userid: '',
   post: '',
   datetime: ''
 }
 
-module.exports = { users, user_refresh_tokens, usersposts };
+module.exports = { users, user_refresh_tokens, user_posts };

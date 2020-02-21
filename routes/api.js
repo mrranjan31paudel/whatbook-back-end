@@ -1,6 +1,6 @@
 const ROUTER = require('express').Router();
 const user = require('./../controllers/user');
-const signup = require('./../controllers/register');
+const signup = require('../controllers/signup');
 const login = require('./../controllers/login');
 const authenticate = require('../middlewares/auth.user');
 const refreshAccessToken = require('../middlewares/auth.renew');

@@ -136,12 +136,22 @@ ROUTER.route('/friend')
 
 ROUTER.route('/requests')
   .get(function (req, res, next) {
-    userService.getRequestList(parseInt(req.query.userId), function (serviceResult) {
-      if (serviceResult.err) {
-        return next(serviceResult.err);
-      }
-      res.send(serviceResult);
-    });
+    if (req.query.type === 'list') {
+      userService.getRequestList(res.user.id, function (serviceResult) {
+        if (serviceResult.err) {
+          return next(serviceResult.err);
+        }
+        res.send(serviceResult);
+      });
+    }
+    else if (req.query.type === 'number') {
+      userService.getNumberOfNewRequests(res.user.id, function (serviceResult) {
+        if (serviceResult.err) {
+          return next(serviceResult.err);
+        }
+        res.send(serviceResult);
+      });
+    }
   });
 
 ROUTER.route('/people')

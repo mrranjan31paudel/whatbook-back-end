@@ -53,7 +53,7 @@ function postUserStatus(user, postData, returnQueryResponse) {
 }
 
 function getUserStories(user, returnQueryResponse) {
-  dbConnection.query(`SELECT user_posts.id, user_posts.userid, users.name, user_posts.date_time, user_posts.content FROM users INNER JOIN user_posts ON users.id=user_posts.userid ORDER BY date_time DESC`, function (err, result) {
+  dbConnection.query(`SELECT user_posts.id, user_posts.userid, users.name, user_posts.date_time, user_posts.content FROM users INNER JOIN user_friends ON ((users.id=user_friends.senderid OR users.id=user_friends.recieverid) AND NOT (users.id='${user.id}')) INNER JOIN user_posts WHERE ((user_friends.senderid='${user.id}' AND user_friends.recieverid=user_posts.userid OR user_friends.recieverid='${user.id}' AND user_friends.senderid=user_posts.userid) AND user_friends.request_status='1') UNION SELECT user_posts.id, user_posts.userid, users.name, user_posts.date_time, user_posts.content FROM users INNER JOIN user_posts ON (users.id='${user.id}' AND user_posts.userid='${user.id}' ) ORDER BY date_time DESC`, function (err, result) {
     if (err) {
       return returnQueryResponse({ err: err });
     }

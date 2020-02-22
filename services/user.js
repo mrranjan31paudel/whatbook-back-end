@@ -227,7 +227,6 @@ function getFriendList(userId, callController) {
 }
 
 function getRequestList(userId, callController) {
-  userId = parseInt(userId);
   query.getRequestList(userId, function (queryResponse) {
     if (queryResponse.err) {
       return callController({
@@ -239,6 +238,21 @@ function getRequestList(userId, callController) {
 
     let requestList = manageRequestList(userId, queryResponse);
     callController(requestList);
+  });
+}
+
+function getNumberOfNewRequests(userId, callController) {
+  query.getRequestList(userId, function (queryResponse) {
+    if (queryResponse.err) {
+      return callController({
+        err: {
+          status: 400
+        }
+      });
+    }
+
+    let requestList = manageRequestList(userId, queryResponse);
+    callController({ numberOfUnansweredRequests: requestList.recievedList.length });
   });
 }
 
@@ -255,4 +269,4 @@ function getPeopleList(userId, callController) {
   });
 }
 
-module.exports = { getUserDetails, getUserProfileDetails, postUserStatus, getNewsFeed, getUserPosts, postComment, getComments, editPost, editComment, deletePost, deleteComment, saveFriendRequest, acceptFriendRequest, deleteFriendship, getFriendList, getRequestList, getPeopleList };
+module.exports = { getUserDetails, getUserProfileDetails, postUserStatus, getNewsFeed, getUserPosts, postComment, getComments, editPost, editComment, deletePost, deleteComment, saveFriendRequest, acceptFriendRequest, deleteFriendship, getFriendList, getRequestList, getPeopleList, getNumberOfNewRequests };

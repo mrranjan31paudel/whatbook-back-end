@@ -23,8 +23,18 @@ ROUTER.route('/')
 
 ROUTER.route('/post')
   .get(function (req, res, next) {
-    if (req.query.id) {
-      userService.getUserPosts(res.user, req.query.id, function (serviceResult) {
+    console.log('PARAMS: ', req.query);
+    if (req.query.userId) {
+      userService.getUserPosts(res.user, parseInt(req.query.userId), function (serviceResult) {
+        if (serviceResult.err) {
+          return next(serviceResult.err);
+        }
+        res.send(serviceResult);
+      });
+    }
+    else if (req.query.ownerId && req.query.postId) {
+      console.log('IN HERE 1');
+      userService.getSpecificPost(res.user, parseInt(req.query.ownerId), parseInt(req.query.postId), function (serviceResult) {
         if (serviceResult.err) {
           return next(serviceResult.err);
         }
@@ -161,6 +171,25 @@ ROUTER.route('/people')
         return next(serviceResult.err);
       }
       console.log('SERVICE RESULT: ', serviceResult);
+      res.send(serviceResult);
+    });
+  });
+
+ROUTER.route('/notifications')
+  .get(function (req, res, next) {
+    console.log('NOTIFICATION LIST TYPE: ', req.query.type);
+    userService.getNotificationsList(req.query.type, res.user.id, function (serviceResult) {
+      if (serviceResult.err) {
+        return next(serviceResult.err);
+      }
+      res.send(serviceResult);
+    });
+  })
+  .put(function (req, res, next) {
+    userService.markNotificationAsRead(res.user.id, req.body.notificationId, function (serviceResult) {
+      if (serviceResult.err) {
+        return next(serviceResult.err);
+      }
       res.send(serviceResult);
     });
   });

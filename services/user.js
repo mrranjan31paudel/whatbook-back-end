@@ -3,6 +3,7 @@ const manageNestedReplies = require('./../utils/replyManager');
 const filterUserPosts = require('./../utils/userPostFilter');
 const formatDateTime = require('./../utils/dateFormatter');
 const manageRequestList = require('./../utils/requestListManager');
+const coutUnreadNotifications = require('./../utils/unreadNotificationsCounter');
 
 function getUserDetails(user, callController) {
   query.getUserHomeDetails(user, function (queryResponse) {
@@ -92,6 +93,34 @@ function getUserPosts(user, ownerId, callController) {
     }
     let filteredList = filterUserPosts(parseInt(ownerId), queryResponse);
     callController(filteredList);
+  });
+}
+
+function getSpecificPost(user, ownerId, postId, callController) {
+  console.log('IN HERE 2');
+  query.getSpecificPost(user.id, ownerId, postId, function (queryResponse) {
+    if (queryResponse.err) {
+
+      return callController({
+        err: {
+          status: 400
+        }
+      });
+    }
+
+    if (queryResponse.length > 0) {
+      formatDateTime(queryResponse);
+      let userPost = queryResponse;
+
+      return callController(userPost);
+    }
+    else {
+      callController({
+        err: {
+          status: 404
+        }
+      });
+    }
   });
 }
 
@@ -269,4 +298,41 @@ function getPeopleList(userId, callController) {
   });
 }
 
-module.exports = { getUserDetails, getUserProfileDetails, postUserStatus, getNewsFeed, getUserPosts, postComment, getComments, editPost, editComment, deletePost, deleteComment, saveFriendRequest, acceptFriendRequest, deleteFriendship, getFriendList, getRequestList, getPeopleList, getNumberOfNewRequests };
+function getNotificationsList(type, userId, callController) {
+  query.getNotificationsList(userId, function (queryResponse) {
+    if (queryResponse.err) {
+      return callController({
+        err: {
+          status: 400
+        }
+      });
+    }
+    console.log('**********************I AM HERE *************');
+    if (type === 'list') {
+      formatDateTime(queryResponse);
+
+      callController(queryResponse);
+    }
+    else if (type === 'number') {
+      let unreadCount = coutUnreadNotifications(queryResponse);
+      callController({
+        numberOfUnreadNotifications: unreadCount
+      });
+    }
+  });
+}
+
+function markNotificationAsRead(userId, notificationId, callController) {
+  query.markNotificationAsRead(userId, notificationId, function (queryResponse) {
+    if (queryResponse.err) {
+      return callController({
+        err: {
+          status: 400
+        }
+      });
+    }
+    callController(queryResponse);
+  });
+}
+
+module.exports = { getUserDetails, getUserProfileDetails, postUserStatus, getNewsFeed, getUserPosts, postComment, getComments, editPost, editComment, deletePost, deleteComment, saveFriendRequest, acceptFriendRequest, deleteFriendship, getFriendList, getRequestList, getPeopleList, getNumberOfNewRequests, getNotificationsList, getSpecificPost, markNotificationAsRead };

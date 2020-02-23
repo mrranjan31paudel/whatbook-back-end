@@ -61,13 +61,56 @@ function getUserStories(user, returnQueryResponse) {
   });
 }
 
+function getSpecificPost(userId, ownerId, postId, returnQueryResponse) {
+  dbConnection.query(`SELECT request_status FROM user_friends WHERE ((senderid='${userId}' AND recieverid='${ownerId}') OR (senderid='${ownerId}' AND recieverid='${userId}'))`, function (err, result) {
+    if (err) {
+      return returnQueryResponse({ err: err });
+    }
+    console.log('FRIEND RESULT: ', result);
+    if (result.length > 0 || userId === ownerId) {
+      dbConnection.query(`SELECT user_posts.id, user_posts.userid, users.name, user_posts.date_time, user_posts.content FROM users INNER JOIN user_posts ON (users.id='${ownerId}' AND user_posts.userid='${ownerId}') WHERE (user_posts.id='${postId}')`, function (err, result) {
+        if (err) {
+          console.log('SPECIFIC POST ERROR: ', err);
+          return returnQueryResponse({ err: err });
+        }
+        console.log('SPECIFIC POST RESULT: ', result);
+        return returnQueryResponse(result);
+      });
+    }
+    else {
+      returnQueryResponse(result);
+    }
+  });
+}
+
 function saveComment(user, data, returnQueryResponse) {
   let dateTime = currentDate.getCurrentDate();
+  console.log('COMMENT DETAILS: ', data);
   if (data.parentCommentId) {
     dbConnection.query(`INSERT INTO user_comments (postid, userid, comment, date_time, parent_reply_id) VALUES ('${data.parentPostId}', '${user.id}', '${data.text}', '${dateTime}', '${data.parentCommentId}')`, function (err, result) {
       if (err) {
+        console.log(err);
         return returnQueryResponse({ err: err });
       }
+
+      if (user.id !== data.parentCommentOwnerId) {
+        dbConnection.query(`INSERT INTO user_notifications (userid, issuerid, action, target, targetid, post_ownerid, date_time) VALUES('${data.parentCommentOwnerId}', '${user.id}', 'replied to', 'your comment', '${data.parentPostId}', '${data.postOwnerId}', '${dateTime}')`, function (err, result) {
+          if (err) {
+            console.log('NOTIFICATION WRITE ERROR: ', err);
+          }
+          console.log('NOTIFICATION WRITE RESULT: ', result);
+        });
+      }
+
+      if (user.id !== data.postOwnerId) {
+        dbConnection.query(`INSERT INTO user_notifications (userid, issuerid, action, target, targetid, date_time) VALUES ('${data.postOwnerId}', '${user.id}', 'commented on', 'your post', '${data.parentPostId}', '${data.postOwnerId}', '${dateTime}')`, function (err, result) {
+          if (err) {
+            console.log('NOTIFICATION WRITE ERROR: ', err);
+          }
+          console.log('NOTIFICATION WRITE RESULT: ', result);
+        });
+      }
+
       returnQueryResponse({ msg: 'SUCCESS' });
     });
   }
@@ -76,6 +119,16 @@ function saveComment(user, data, returnQueryResponse) {
       if (err) {
         return returnQueryResponse({ err: err });
       }
+
+      if (user.id !== data.postOwnerId) {
+        dbConnection.query(`INSERT INTO user_notifications (userid, issuerid, action, target, targetid, date_time) VALUES ('${data.postOwnerId}', '${user.id}', 'commented on', 'your post', '${data.parentPostId}', '${data.postOwnerId}', '${dateTime}')`, function (err, result) {
+          if (err) {
+            console.log('NOTIFICATION WRITE ERROR: ', err);
+          }
+          console.log('NOTIFICATION WRITE RESULT: ', result);
+        });
+      }
+
       returnQueryResponse({ msg: 'SUCCESS' });
     });
   }
@@ -137,17 +190,24 @@ function deleteUserComment(user, commentData, returnQueryResponse) {
 }
 
 function saveFriendRequest(senderId, recieverId, returnQueryResponse) {
+  let dateTime = currentDate.getCurrentDate();
   dbConnection.query(`SELECT request_status FROM user_friends WHERE ((senderid='${senderId}' OR senderid='${recieverId}') AND (recieverid='${senderId}' OR recieverid='${recieverId}'))`, function (err, result) {
     if (err) {
       return returnQueryResponse({ err: err });
     }
     const [queryResult] = result;
-    console.log('ADD FRIEND RESULT: ', queryResult);
+    // console.log('ADD FRIEND RESULT: ', queryResult);
     if (!queryResult) {
       dbConnection.query(`INSERT INTO user_friends (senderid, recieverid, request_status) VALUES ('${senderId}', '${recieverId}', '0')`, function (err, result) {
         if (err) {
           return returnQueryResponse({ err: err });
         }
+        dbConnection.query(`INSERT INTO user_notifications (userid, issuerid, action, target, targetid, date_time) VALUES ('${recieverId}', '${senderId}', 'sent', 'you friend request', '${senderId}', '${dateTime}' )`, function (err, result) {
+          if (err) {
+            console.log('NOTIFICATION WRITE ERROR: ', err);
+          }
+          console.log('NOTIFICATION WRITE RESULT: ', result);
+        });
         return returnQueryResponse({ msg: 'SUCCESS' });
       });
     }
@@ -162,10 +222,17 @@ function saveFriendRequest(senderId, recieverId, returnQueryResponse) {
 }
 
 function saveAcceptedFriendRequest(recieverId, senderId, returnQueryResponse) {
+  let dateTime = currentDate.getCurrentDate();
   dbConnection.query(`UPDATE user_friends SET request_status='1' WHERE ((senderid='${senderId}' OR senderid='${recieverId}') AND (recieverid='${senderId}' OR recieverid='${recieverId}'))`, function (err, result) {
     if (err) {
       return returnQueryResponse({ err: err });
     }
+    dbConnection.query(`INSERT INTO user_notifications (userid, issuerid, action, target, targetid, date_time) VALUES ('${senderId}', '${recieverId}', 'accepted', 'your friend request', '${recieverId}', '${dateTime}' )`, function (err, result) {
+      if (err) {
+        console.log('NOTIFICATION WRITE ERROR: ', err);
+      }
+      console.log('NOTIFICATION WRITE RESULT: ', result);
+    });
     returnQueryResponse({ msg: 'SUCCESS' });
   });
 }
@@ -224,4 +291,23 @@ function getPeopleList(userId, returnQueryResponse) {
   });
 }
 
-module.exports = { getUserHomeDetails, getUserProfileDetails, postUserStatus, getUserStories, saveComment, getUserComments, updateUserPost, updateUserComment, deleteUserPost, deleteUserComment, saveFriendRequest, saveAcceptedFriendRequest, deleteFriendship, getFriendList, getRequestList, getPeopleList };
+function getNotificationsList(userId, returnQueryResponse) {
+  dbConnection.query(`SELECT user_notifications.id, user_notifications.issuerid, users.name, user_notifications.action, user_notifications.target, user_notifications.targetid, user_notifications.post_ownerid, user_notifications.date_time, user_notifications.status FROM users INNER JOIN user_notifications ON (user_notifications.userid='${userId}' AND users.id=user_notifications.issuerid)`, function (err, result) {
+    if (err) {
+      return returnQueryResponse({ err: err });
+    }
+    console.log('NOTIFICATIONS LIST: ', result);
+    returnQueryResponse(result);
+  });
+}
+
+function markNotificationAsRead(userId, notificationId, returnQueryResponse) {
+  dbConnection.query(`UPDATE user_notifications SET status='1' WHERE (id='${notificationId}' AND userid='${userId}')`, function (err, result) {
+    if (err) {
+      return returnQueryResponse({ err: err });
+    }
+    returnQueryResponse({ msg: 'SUCCESS' });
+  });
+}
+
+module.exports = { getUserHomeDetails, getUserProfileDetails, postUserStatus, getUserStories, saveComment, getUserComments, updateUserPost, updateUserComment, deleteUserPost, deleteUserComment, saveFriendRequest, saveAcceptedFriendRequest, deleteFriendship, getFriendList, getRequestList, getPeopleList, getNotificationsList, getSpecificPost, markNotificationAsRead };

@@ -11,6 +11,24 @@ function getUserHomeDetails(user, returnQueryResponse) {
   });
 }
 
+function changeUserName(userId, newName, returnQueryResponse) {
+  dbConnection.query(`UPDATE users SET name='${newName}' WHERE id='${userId}'`, function (err, result) {
+    if (err) {
+      return returnQueryResponse({ err: err });
+    }
+    returnQueryResponse({ msg: 'SUCCESS' })
+  });
+}
+
+function changeUserDOB(userId, newDate, returnQueryResponse) {
+  dbConnection.query(`UPDATE users SET dob='${newDate}' WHERE id='${userId}'`, function (err, result) {
+    if (err) {
+      return returnQueryResponse({ err: err });
+    }
+    returnQueryResponse({ msg: 'SUCCESS' })
+  });
+}
+
 function getUserProfileDetails(userId, ownerId, returnQueryResponse) {
   dbConnection.query(`SELECT id, name, dob, email FROM users WHERE (id='${ownerId}')`, function (err, result) {
     if (err) {
@@ -121,7 +139,7 @@ function saveComment(user, data, returnQueryResponse) {
       }
 
       if (user.id !== data.postOwnerId) {
-        dbConnection.query(`INSERT INTO user_notifications (userid, issuerid, action, target, targetid, date_time) VALUES ('${data.postOwnerId}', '${user.id}', 'commented on', 'your post', '${data.parentPostId}', '${data.postOwnerId}', '${dateTime}')`, function (err, result) {
+        dbConnection.query(`INSERT INTO user_notifications (userid, issuerid, action, target, targetid, post_ownerid, date_time) VALUES ('${data.postOwnerId}', '${user.id}', 'commented on', 'your post', '${data.parentPostId}', '${data.postOwnerId}', '${dateTime}')`, function (err, result) {
           if (err) {
             console.log('NOTIFICATION WRITE ERROR: ', err);
           }
@@ -310,4 +328,14 @@ function markNotificationAsRead(userId, notificationId, returnQueryResponse) {
   });
 }
 
-module.exports = { getUserHomeDetails, getUserProfileDetails, postUserStatus, getUserStories, saveComment, getUserComments, updateUserPost, updateUserComment, deleteUserPost, deleteUserComment, saveFriendRequest, saveAcceptedFriendRequest, deleteFriendship, getFriendList, getRequestList, getPeopleList, getNotificationsList, getSpecificPost, markNotificationAsRead };
+function markAllNotificationAsRead(userId, returnQueryResponse) {
+
+  dbConnection.query(`UPDATE user_notifications SET status='1' WHERE (userid='${userId}' AND status='0')`, function (err, result) {
+    if (err) {
+      return returnQueryResponse({ err: err });
+    }
+    returnQueryResponse({ msg: 'SUCCESS' });
+  });
+}
+
+module.exports = { getUserHomeDetails, changeUserName, changeUserDOB, getUserProfileDetails, postUserStatus, getUserStories, saveComment, getUserComments, updateUserPost, updateUserComment, deleteUserPost, deleteUserComment, saveFriendRequest, saveAcceptedFriendRequest, deleteFriendship, getFriendList, getRequestList, getPeopleList, getNotificationsList, getSpecificPost, markNotificationAsRead, markAllNotificationAsRead };

@@ -23,6 +23,33 @@ function getUserDetails(user, callController) {
   });
 }
 
+function changeUserData(userId, changeInfo, callController) {
+  if (changeInfo.type === 'name') {
+    query.changeUserName(userId, changeInfo.submitData, function (queryResponse) {
+      if (queryResponse.err) {
+        return callController({
+          err: {
+            status: 400
+          }
+        });
+      }
+      callController(queryResponse);
+    });
+  }
+  else if (changeInfo.type === 'dob') {
+    query.changeUserDOB(userId, changeInfo.submitData, function (queryResponse) {
+      if (queryResponse.err) {
+        return callController({
+          err: {
+            status: 400
+          }
+        });
+      }
+      callController(queryResponse);
+    });
+  }
+}
+
 function getUserProfileDetails(user, ownerId, callController) {
   query.getUserProfileDetails(user.id, ownerId, function (queryResponse) {
     if (queryResponse && queryResponse.err) {
@@ -323,16 +350,31 @@ function getNotificationsList(type, userId, callController) {
 }
 
 function markNotificationAsRead(userId, notificationId, callController) {
-  query.markNotificationAsRead(userId, notificationId, function (queryResponse) {
-    if (queryResponse.err) {
-      return callController({
-        err: {
-          status: 400
-        }
-      });
-    }
-    callController(queryResponse);
-  });
+  console.log('IN HERE mark place');
+  if (notificationId === 'all') {
+    query.markAllNotificationAsRead(userId, function (queryResponse) {
+      if (queryResponse.err) {
+        return callController({
+          err: {
+            status: 400
+          }
+        });
+      }
+      callController(queryResponse);
+    });
+  }
+  else {
+    query.markNotificationAsRead(userId, notificationId, function (queryResponse) {
+      if (queryResponse.err) {
+        return callController({
+          err: {
+            status: 400
+          }
+        });
+      }
+      callController(queryResponse);
+    });
+  }
 }
 
-module.exports = { getUserDetails, getUserProfileDetails, postUserStatus, getNewsFeed, getUserPosts, postComment, getComments, editPost, editComment, deletePost, deleteComment, saveFriendRequest, acceptFriendRequest, deleteFriendship, getFriendList, getRequestList, getPeopleList, getNumberOfNewRequests, getNotificationsList, getSpecificPost, markNotificationAsRead };
+module.exports = { getUserDetails, changeUserData, getUserProfileDetails, postUserStatus, getNewsFeed, getUserPosts, postComment, getComments, editPost, editComment, deletePost, deleteComment, saveFriendRequest, acceptFriendRequest, deleteFriendship, getFriendList, getRequestList, getPeopleList, getNumberOfNewRequests, getNotificationsList, getSpecificPost, markNotificationAsRead };

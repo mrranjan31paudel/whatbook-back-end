@@ -19,6 +19,14 @@ ROUTER.route('/')
         res.send(serviceResult);
       })
     }
+  })
+  .put(function (req, res, next) {
+    userService.changeUserData(res.user.id, req.body, function (serviceResult) {
+      if (serviceResult.err) {
+        return next(serviceResult.err);
+      }
+      res.send(serviceResult);
+    })
   });
 
 ROUTER.route('/post')
@@ -177,7 +185,6 @@ ROUTER.route('/people')
 
 ROUTER.route('/notifications')
   .get(function (req, res, next) {
-    console.log('NOTIFICATION LIST TYPE: ', req.query.type);
     userService.getNotificationsList(req.query.type, res.user.id, function (serviceResult) {
       if (serviceResult.err) {
         return next(serviceResult.err);

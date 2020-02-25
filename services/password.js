@@ -1,6 +1,7 @@
 const BCRYPT = require('bcryptjs');
 
 function encryptPassword(inputPassword, hashReturnFunction) {
+
   BCRYPT.genSalt(10, function (err, salt) {
     if (err) {
       return hashReturnFunction({ err: err });
@@ -15,6 +16,7 @@ function encryptPassword(inputPassword, hashReturnFunction) {
 }
 
 function decryptPassword(inputPassword, hashedPassword, hashReturnFunction) {
+
   BCRYPT.compare(inputPassword, hashedPassword, function (err, result) {
     if (err) {
       return hashReturnFunction({ err: err });

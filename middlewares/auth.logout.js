@@ -5,8 +5,7 @@ ROUTER.route('/')
   .post(function (req, res, next) {
     if (req.body.refreshToken) {
 
-      const refreshToken = req.body.refreshToken;
-      logoutUser(refreshToken, function (serviceResult) {
+      logoutUser(req.body.refreshToken, function (serviceResult) {
         if (serviceResult.err) {
           return next(serviceResult.err);
         }

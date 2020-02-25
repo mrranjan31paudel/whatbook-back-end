@@ -4,6 +4,7 @@ const filterUserPosts = require('./../utils/userPostFilter');
 const formatDateTime = require('./../utils/dateFormatter');
 const manageRequestList = require('./../utils/requestListManager');
 const coutUnreadNotifications = require('./../utils/unreadNotificationsCounter');
+const { encryptPassword, decryptPassword } = require('./password');
 
 function getUserDetails(user, callController) {
   query.getUserHomeDetails(user, function (queryResponse) {
@@ -24,6 +25,7 @@ function getUserDetails(user, callController) {
 }
 
 function changeUserData(userId, changeInfo, callController) {
+
   if (changeInfo.type === 'name') {
     query.changeUserName(userId, changeInfo.submitData, function (queryResponse) {
       if (queryResponse.err) {
@@ -46,6 +48,56 @@ function changeUserData(userId, changeInfo, callController) {
         });
       }
       callController(queryResponse);
+    });
+  }
+  else if (changeInfo.type === 'password') {
+    query.getUserPassword(userId, function (encryptedPassword) {
+      if (encryptedPassword.err) {
+
+        return callController({
+          err: {
+            status: 500 // If user eists password should also exist, so a query error will be server error in this case.
+          }
+        });
+      }
+      decryptPassword(changeInfo.submitData.currentPassword, encryptedPassword, function (doesMatch) {
+        if (doesMatch.err) {
+
+          return callController({
+            err: {
+              status: 500 //unable to decrypt password
+            }
+          });
+        }
+        else if (doesMatch) {
+          encryptPassword(changeInfo.submitData.newPassword, function (newEncryptedPassword) {
+            if (newEncryptedPassword.err) {
+              return callController({
+                err: {
+                  status: 500 //being unable to hash password
+                }
+              });
+            }
+            query.changeUserPassword(userId, newEncryptedPassword, encryptedPassword, function (queryResponse) {
+              if (queryResponse.err) {
+                return callController({
+                  err: {
+                    status: 500
+                  }
+                });
+              }
+              return callController(queryResponse);
+            });
+          });
+        }
+        else {
+          callController({
+            err: {
+              status: 400
+            }
+          });
+        }
+      });
     });
   }
 }
@@ -154,6 +206,7 @@ function getSpecificPost(user, ownerId, postId, callController) {
 function postComment(user, data, callController) {
   query.saveComment(user, data, function (queryResponse) {
     if (queryResponse.err) {
+      console.log('COMMENT POST ERROR: ', queryResponse.err);
       return callController({
         err: {
           status: 400
@@ -334,7 +387,7 @@ function getNotificationsList(type, userId, callController) {
         }
       });
     }
-    console.log('**********************I AM HERE *************');
+
     if (type === 'list') {
       formatDateTime(queryResponse);
 
@@ -349,9 +402,8 @@ function getNotificationsList(type, userId, callController) {
   });
 }
 
-function markNotificationAsRead(userId, notificationId, callController) {
-  console.log('IN HERE mark place');
-  if (notificationId === 'all') {
+function markNotificationAsRead(userId, selectedNotification, callController) {
+  if (selectedNotification.notificationId === 'all') {
     query.markAllNotificationAsRead(userId, function (queryResponse) {
       if (queryResponse.err) {
         return callController({
@@ -363,8 +415,20 @@ function markNotificationAsRead(userId, notificationId, callController) {
       callController(queryResponse);
     });
   }
+  else if (selectedNotification.notificationId && (selectedNotification.toMakeStatus === 1 || selectedNotification.toMakeStatus === 0)) {
+    query.markNotificationReadUnread(userId, selectedNotification, function (queryResponse) {
+      if (queryResponse.err) {
+        return callController({
+          err: {
+            status: 400
+          }
+        });
+      }
+      callController(queryResponse);
+    });
+  }
   else {
-    query.markNotificationAsRead(userId, notificationId, function (queryResponse) {
+    query.markNotificationAsRead(userId, selectedNotification.notificationId, function (queryResponse) {
       if (queryResponse.err) {
         return callController({
           err: {
@@ -377,4 +441,17 @@ function markNotificationAsRead(userId, notificationId, callController) {
   }
 }
 
-module.exports = { getUserDetails, changeUserData, getUserProfileDetails, postUserStatus, getNewsFeed, getUserPosts, postComment, getComments, editPost, editComment, deletePost, deleteComment, saveFriendRequest, acceptFriendRequest, deleteFriendship, getFriendList, getRequestList, getPeopleList, getNumberOfNewRequests, getNotificationsList, getSpecificPost, markNotificationAsRead };
+function deleteNotification(userId, notificationId, callController) {
+  query.deleteNotification(userId, notificationId, function (queryResponse) {
+    if (queryResponse.err) {
+      return callController({
+        err: {
+          status: 400
+        }
+      });
+    }
+    callController(queryResponse);
+  });
+}
+
+module.exports = { getUserDetails, changeUserData, getUserProfileDetails, postUserStatus, getNewsFeed, getUserPosts, postComment, getComments, editPost, editComment, deletePost, deleteComment, saveFriendRequest, acceptFriendRequest, deleteFriendship, getFriendList, getRequestList, getPeopleList, getNumberOfNewRequests, getNotificationsList, getSpecificPost, markNotificationAsRead, deleteNotification };

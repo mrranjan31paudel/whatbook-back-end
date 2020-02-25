@@ -1,6 +1,26 @@
 const dbConnection = require('./../configs/db-initiations/config.db.connect');
 const currentDate = require('./../utils/currentDate');
 
+function getUserPassword(userId, returnQueryResponse) {
+  dbConnection.query(`SELECT password FROM users WHERE id='${userId}'`, function (err, result) {
+    if (err) {
+      return returnQueryResponse({ err: err });
+    }
+    const [password] = result;
+    returnQueryResponse(password.password);
+  });
+}
+
+function changeUserPassword(userId, newPassword, oldPassword, returnQueryResponse) {
+  dbConnection.query(`UPDATE users SET password='${newPassword}' WHERE (id='${userId}' AND password='${oldPassword}')`, function (err, result) {
+    if (err) {
+      return returnQueryResponse({ err: err });
+    }
+
+    returnQueryResponse({ msg: 'SUCCESS' });
+  });
+}
+
 function getUserHomeDetails(user, returnQueryResponse) {
   dbConnection.query(`SELECT id, name, dob, email FROM users WHERE (id='${user.id}' AND email='${user.email}')`, function (err, result) {
     if (err) {
@@ -310,11 +330,11 @@ function getPeopleList(userId, returnQueryResponse) {
 }
 
 function getNotificationsList(userId, returnQueryResponse) {
-  dbConnection.query(`SELECT user_notifications.id, user_notifications.issuerid, users.name, user_notifications.action, user_notifications.target, user_notifications.targetid, user_notifications.post_ownerid, user_notifications.date_time, user_notifications.status FROM users INNER JOIN user_notifications ON (user_notifications.userid='${userId}' AND users.id=user_notifications.issuerid)`, function (err, result) {
+  dbConnection.query(`SELECT user_notifications.id, user_notifications.issuerid, users.name, user_notifications.action, user_notifications.target, user_notifications.targetid, user_notifications.post_ownerid, user_notifications.date_time, user_notifications.status FROM users INNER JOIN user_notifications ON (user_notifications.userid='${userId}' AND users.id=user_notifications.issuerid) ORDER BY user_notifications.date_time DESC `, function (err, result) {
     if (err) {
       return returnQueryResponse({ err: err });
     }
-    console.log('NOTIFICATIONS LIST: ', result);
+
     returnQueryResponse(result);
   });
 }
@@ -338,4 +358,24 @@ function markAllNotificationAsRead(userId, returnQueryResponse) {
   });
 }
 
-module.exports = { getUserHomeDetails, changeUserName, changeUserDOB, getUserProfileDetails, postUserStatus, getUserStories, saveComment, getUserComments, updateUserPost, updateUserComment, deleteUserPost, deleteUserComment, saveFriendRequest, saveAcceptedFriendRequest, deleteFriendship, getFriendList, getRequestList, getPeopleList, getNotificationsList, getSpecificPost, markNotificationAsRead, markAllNotificationAsRead };
+function markNotificationReadUnread(userId, notificationInfo, returnQueryResponse) {
+  dbConnection.query(`UPDATE user_notifications SET status='${notificationInfo.toMakeStatus}' WHERE (userid='${userId}' AND id='${notificationInfo.notificationId}')`, function (err, result) {
+    if (err) {
+
+      return returnQueryResponse({ err: err });
+    }
+    returnQueryResponse({ msg: 'SUCCESS' });
+  });
+}
+
+function deleteNotification(userId, notificationId, returnQueryResponse) {
+  dbConnection.query(`DELETE FROM user_notifications WHERE (id='${notificationId}' AND userid='${userId}')`, function (err, result) {
+    if (err) {
+
+      return returnQueryResponse({ err: err });
+    }
+    returnQueryResponse({ msg: 'SUCCESS' });
+  })
+}
+
+module.exports = { getUserPassword, changeUserPassword, getUserHomeDetails, changeUserName, changeUserDOB, getUserProfileDetails, postUserStatus, getUserStories, saveComment, getUserComments, updateUserPost, updateUserComment, deleteUserPost, deleteUserComment, saveFriendRequest, saveAcceptedFriendRequest, deleteFriendship, getFriendList, getRequestList, getPeopleList, getNotificationsList, getSpecificPost, markNotificationAsRead, markAllNotificationAsRead, markNotificationReadUnread, deleteNotification };

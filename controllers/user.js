@@ -193,12 +193,20 @@ ROUTER.route('/notifications')
     });
   })
   .put(function (req, res, next) {
-    userService.markNotificationAsRead(res.user.id, req.body.notificationId, function (serviceResult) {
+    userService.markNotificationAsRead(res.user.id, req.body, function (serviceResult) {
       if (serviceResult.err) {
         return next(serviceResult.err);
       }
       res.send(serviceResult);
     });
+  })
+  .delete(function (req, res, next) {
+    userService.deleteNotification(res.user.id, req.query.notificationId, function (serviceResult) {
+      if (serviceResult.err) {
+        return next(serviceResult.err);
+      }
+      res.send(serviceResult);
+    })
   });
 
 module.exports = ROUTER;

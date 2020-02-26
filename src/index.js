@@ -2,12 +2,13 @@ const EXPRESS = require('express');
 const APP = EXPRESS();
 const LOGGER = require('morgan');
 const PATH = require('path');
-const API_ROUTES = require('./routes/api');
+const API_ROUTES = require('./api.routes');
 const CREATE_USER_TABLE = require('./configs/db-initiations/config.db.createTable');
 const CORS = require('cors');
 
 const PORT = 9090;
 //afsd
+
 CREATE_USER_TABLE.createTable();    //Creates table if doesnt exist.
 APP.use(LOGGER('dev'));
 
@@ -50,5 +51,6 @@ APP.use(function (err, req, res, next) {  //(Error Handling Middleware): Sends r
 });
 
 APP.listen(PORT, function () {
+    console.log('INSIDE SRC');
     console.log(`Server is listening at PORT: ${PORT}`);
 });

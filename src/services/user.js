@@ -4,7 +4,7 @@ const filterUserPosts = require('./../utils/userPostFilter');
 const formatDateTime = require('./../utils/dateFormatter');
 const manageRequestList = require('./../utils/requestListManager');
 const coutUnreadNotifications = require('./../utils/unreadNotificationsCounter');
-const { encryptPassword, decryptPassword } = require('./password');
+const { encryptPassword, decryptPassword } = require('./../utils/password');
 
 function getUserDetails(user, callController) {
   query.getUserHomeDetails(user, function (queryResponse) {

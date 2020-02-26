@@ -1,4 +1,4 @@
-const query = require('./../queries/auth.logout');
+const query = require('../queries/logout');
 
 function logoutUser(refreshToken, callBackMiddleware) {
   query.deleteRefreshToken(refreshToken, function (queryResponse) {
@@ -10,7 +10,7 @@ function logoutUser(refreshToken, callBackMiddleware) {
         msg: 'LOGGED_OUT'
       }
     });
-  })
+  });
 }
 
-module.exports = logoutUser;
+module.exports = { logoutUser };

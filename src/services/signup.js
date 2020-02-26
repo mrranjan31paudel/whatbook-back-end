@@ -1,7 +1,7 @@
-const { encryptPassword } = require('./password');
+const { encryptPassword } = require('./../utils/password');
 const query = require('../queries/signup');
 
-function registerService(inputUserData, callController) {
+function signupService(inputUserData, callController) {
   encryptPassword(inputUserData.password, function (hashedPassword) {
     if (hashedPassword.err) {
       return callController({ err: hashedPassword.err });
@@ -19,4 +19,4 @@ function registerService(inputUserData, callController) {
   });
 }
 
-module.exports = registerService;
+module.exports = signupService;

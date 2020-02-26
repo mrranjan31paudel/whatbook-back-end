@@ -1,6 +1,6 @@
 const JWT = require('jsonwebtoken');
 const jwtConfig = require('../configs/config.structure');
-const query = require('../queries/auth.renew');
+const query = require('./../queries/tokenRenew');
 
 function renewTokens(refreshToken, callBackMiddleware) {
   query.checkTokenExistance(refreshToken, function (queryResponse) {
@@ -50,4 +50,4 @@ function renewTokens(refreshToken, callBackMiddleware) {
   });
 }
 
-module.exports = renewTokens;
+module.exports = { renewTokens };

@@ -1,6 +1,6 @@
 const JWT = require('jsonwebtoken');
 const jwtConfig = require('./../configs/config.structure');
-const { decryptPassword } = require('./password');
+const { decryptPassword } = require('./../utils/password');
 const query = require('./../queries/login');
 
 function loginService(inputUserData, callController) {

@@ -1,8 +1,8 @@
-const JWT = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 const { SECRET_KEY_ACCESS_TOKEN } = require('../configs/config.structure');
 
 function authenticateUser(accessToken, callBackMiddleware) {
-  JWT.verify(accessToken, SECRET_KEY_ACCESS_TOKEN, function (err, result) {
+  jwt.verify(accessToken, SECRET_KEY_ACCESS_TOKEN, function (err, result) {
     if (err) {
       if (err.name === 'TokenExpiredError') {
         return callBackMiddleware({

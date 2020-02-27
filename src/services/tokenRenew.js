@@ -1,4 +1,4 @@
-const JWT = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 const jwtConfig = require('../configs/config.structure');
 const query = require('./../queries/tokenRenew');
 
@@ -8,7 +8,7 @@ function renewTokens(refreshToken, callBackMiddleware) {
       return callBackMiddleware({ err: queryResponse.err });
     }
     let userid = queryResponse.userid;
-    JWT.verify(refreshToken, jwtConfig.SECRET_KEY_REFRESH_TOKEN, function (jwtErr, jwtResult) {
+    jwt.verify(refreshToken, jwtConfig.SECRET_KEY_REFRESH_TOKEN, function (jwtErr, jwtResult) {
       if (jwtErr) {
         if (jwtErr.name === 'TokenExpiredError') {
           query.deleteExpiredToken(refreshToken, userid, function (queryResponse) {
@@ -31,8 +31,8 @@ function renewTokens(refreshToken, callBackMiddleware) {
         }
       }
       else {
-        let newAccessToken = JWT.sign({ id: jwtResult.id, email: jwtResult.email }, jwtConfig.SECRET_KEY_ACCESS_TOKEN, { expiresIn: jwtConfig.LIFE_ACCESS_TOKEN });
-        let newRefreshToken = JWT.sign({ id: jwtResult.id, email: jwtResult.email }, jwtConfig.SECRET_KEY_REFRESH_TOKEN, { expiresIn: jwtConfig.LIFE_REFRESH_TOKEN });
+        let newAccessToken = jwt.sign({ id: jwtResult.id, email: jwtResult.email }, jwtConfig.SECRET_KEY_ACCESS_TOKEN, { expiresIn: jwtConfig.LIFE_ACCESS_TOKEN });
+        let newRefreshToken = jwt.sign({ id: jwtResult.id, email: jwtResult.email }, jwtConfig.SECRET_KEY_REFRESH_TOKEN, { expiresIn: jwtConfig.LIFE_REFRESH_TOKEN });
 
         query.storeNewRefreshToken(newRefreshToken, refreshToken, function (queryResponse) {
           if (queryResponse.err) {

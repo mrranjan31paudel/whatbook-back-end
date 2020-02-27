@@ -1,4 +1,4 @@
-const ROUTER = require('express').Router();
+const router = require('express').Router();
 
 const userRoutes = require('./routes/user');
 const signupRoutes = require('./routes/signup');
@@ -8,19 +8,18 @@ const logoutRoutes = require('./routes/logout');
 
 const authenticate = require('./middlewares/auth.user');
 
-ROUTER.use('/', function (req, res, next) {   //For Home Page.
-  console.log('Inside API ');
+router.use('/', function (req, res, next) {   //For Home Page.
   next();
 });
 
-ROUTER.use('/signup', signupRoutes);     //For links in registration.
+router.use('/signup', signupRoutes);     //For links in registration.
 
-ROUTER.use('/login', loginRoutes);
+router.use('/login', loginRoutes);
 
-ROUTER.use('/user', authenticate, userRoutes);    //For links in 'user component' further.
+router.use('/user', authenticate, userRoutes);    //For links in 'user component' further.
 
-ROUTER.use('/tokenrenew', refreshAccessTokenRoutes);
+router.use('/tokenrenew', refreshAccessTokenRoutes);
 
-ROUTER.use('/logout', logoutRoutes);
+router.use('/logout', logoutRoutes);
 
-module.exports = ROUTER;
+module.exports = router;

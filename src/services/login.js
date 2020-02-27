@@ -1,4 +1,4 @@
-const JWT = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 const jwtConfig = require('./../configs/config.structure');
 const { decryptPassword } = require('./../utils/password');
 const query = require('./../queries/login');
@@ -21,8 +21,8 @@ function loginService(inputUserData, callController) {
             email: user.email
           }
           console.log('secrets: ', jwtConfig.SECRET_KEY_ACCESS_TOKEN, jwtConfig.SECRET_KEY_REFRESH_TOKEN, jwtConfig.LIFE_ACCESS_TOKEN, jwtConfig.LIFE_REFRESH_TOKEN);
-          let refreshToken = JWT.sign(jwtPayload, jwtConfig.SECRET_KEY_REFRESH_TOKEN, { expiresIn: jwtConfig.LIFE_REFRESH_TOKEN });
-          let accessToken = JWT.sign(jwtPayload, jwtConfig.SECRET_KEY_ACCESS_TOKEN, { expiresIn: jwtConfig.LIFE_ACCESS_TOKEN });
+          let refreshToken = jwt.sign(jwtPayload, jwtConfig.SECRET_KEY_REFRESH_TOKEN, { expiresIn: jwtConfig.LIFE_REFRESH_TOKEN });
+          let accessToken = jwt.sign(jwtPayload, jwtConfig.SECRET_KEY_ACCESS_TOKEN, { expiresIn: jwtConfig.LIFE_ACCESS_TOKEN });
 
           query.storeRefreshToken(user.id, refreshToken, function (queryResponse) {
             if (queryResponse.err) {

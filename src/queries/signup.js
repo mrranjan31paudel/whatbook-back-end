@@ -1,7 +1,7 @@
-const DB_CONNECTION = require('../configs/db-initiations/config.db.connect');
+const dbConnection = require('../configs/db-initiations/config.db.connect');
 
 function storeUserData(user, returnQueryResponse) {
-  DB_CONNECTION.query(`INSERT INTO users (name, dob, email, password) VALUES('${user.name}', '${user.dob}', '${user.email}', '${user.password}')`, function (err, result) {
+  dbConnection.query(`INSERT INTO users (name, dob, email, password) VALUES('${user.name}', '${user.dob}', '${user.email}', '${user.password}')`, function (err, result) {
     if (err) {
       if (err.code === 'ER_DUP_ENTRY') {
         return returnQueryResponse({

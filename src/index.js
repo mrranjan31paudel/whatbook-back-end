@@ -1,38 +1,38 @@
-const EXPRESS = require('express');
-const APP = EXPRESS();
-const LOGGER = require('morgan');
-const PATH = require('path');
-const API_ROUTES = require('./api.routes');
-const CREATE_USER_TABLE = require('./configs/db-initiations/config.db.createTable');
-const CORS = require('cors');
+const express = require('express');
+const app = express();
+const logger = require('morgan');
+const path = require('path');
+const apiRoutes = require('./api.routes');
+const createTables = require('./configs/db-initiations/config.db.createTable');
+const cors = require('cors');
 
-const PORT = 9090;
+const { PORT } = require('./configs/config.structure');
 //afsd
 
-CREATE_USER_TABLE.createTable();    //Creates table if doesnt exist.
-APP.use(LOGGER('dev'));
+createTables.createTable();    //Creates table if doesnt exist.
+app.use(logger('dev'));
 
-APP.use(CORS());
+app.use(cors());
 
-APP.use(EXPRESS.urlencoded({    //Returns middleware that only parses urlencoded bodies and only 
+app.use(express.urlencoded({    //Returns middleware that only parses urlencoded bodies and only 
     extended: true              //looks at requests where the Content-Type header matches the type option.
 }));
 
-APP.use(EXPRESS.json()); //Returns middleware>>only parses json, only looks at requests:Content-Type header = type option.
+app.use(express.json()); //Returns middleware>>only parses json, only looks at requests:Content-Type header = type option.
 
-APP.use('/files', EXPRESS.static(PATH.join(__dirname, 'files')));   //To access static files.
+app.use('/files', express.static(path.join(__dirname, 'files')));   //To access static files.
 
-APP.use('/api', API_ROUTES);    //Directs to api routes and services.
+app.use('/api', apiRoutes);    //Directs to api routes and services.
 
 
-APP.use(function (req, res, next) {   //Passes the Not Found(404) error to Error Handling Middleware.
+app.use(function (req, res, next) {   //Passes the Not Found(404) error to Error Handling Middleware.
     next({
         status: 404,
         msg: 'Not Found!'
     });
 });
 
-APP.use(function (err, req, res, next) {  //(Error Handling Middleware): Sends response for every error of the app.
+app.use(function (err, req, res, next) {  //(Error Handling Middleware): Sends response for every error of the app.
     console.log('err status: ', err.status);
     if (err.status === 401 && (err.msg === 'TOKEN_EXPIRED' || err.msg === 'INVALID_PASSWORD')) {
         res.status(err.status).send({
@@ -50,7 +50,6 @@ APP.use(function (err, req, res, next) {  //(Error Handling Middleware): Sends r
 
 });
 
-APP.listen(PORT, function () {
-    console.log('INSIDE SRC');
+app.listen(PORT, function () {
     console.log(`Server is listening at PORT: ${PORT}`);
 });

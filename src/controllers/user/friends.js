@@ -60,7 +60,7 @@ function readUserPeopleData(req, res, next) {
     if (serviceResult.err) {
       return next(serviceResult.err);
     }
-    console.log('SERVICE RESULT: ', serviceResult);
+
     res.send(serviceResult);
   });
 }

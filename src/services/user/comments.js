@@ -18,7 +18,6 @@ function getComments(user, postId, callController) {
 function postComment(user, data, callController) {
   query.saveComment(user, data, function (queryResponse) {
     if (queryResponse.err) {
-      console.log('COMMENT POST ERROR: ', queryResponse.err);
       return callController({
         err: {
           status: 400

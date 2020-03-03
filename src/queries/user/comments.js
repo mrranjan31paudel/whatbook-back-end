@@ -12,29 +12,29 @@ function getUserComments(user, postId, returnQueryResponse) {
 
 function saveComment(user, data, returnQueryResponse) {
   let dateTime = currentDate.getCurrentDate();
-  console.log('COMMENT DETAILS: ', data);
+
   if (data.parentCommentId) {
     dbConnection.query(`INSERT INTO user_comments (postid, userid, comment, date_time, parent_reply_id) VALUES ('${data.parentPostId}', '${user.id}', '${data.text}', '${dateTime}', '${data.parentCommentId}')`, function (err, result) {
       if (err) {
-        console.log(err);
+
         return returnQueryResponse({ err: err });
       }
 
       if (user.id !== data.parentCommentOwnerId) {
         dbConnection.query(`INSERT INTO user_notifications (userid, issuerid, action, target, targetid, post_ownerid, date_time) VALUES('${data.parentCommentOwnerId}', '${user.id}', 'replied to', 'your comment', '${data.parentPostId}', '${data.postOwnerId}', '${dateTime}')`, function (err, result) {
           if (err) {
-            console.log('NOTIFICATION WRITE ERROR: ', err);
+            console.log('NEW REPLY FOR COMMENT OWNER NOTIFICATION WRITE FAILURE');
           }
-          console.log('NOTIFICATION WRITE RESULT: ', result);
+          console.log('NEW REPLY FOR COMMENT OWNER NOTIFICATION WRITE SUCCESS');
         });
       }
 
       if (user.id !== data.postOwnerId) {
         dbConnection.query(`INSERT INTO user_notifications (userid, issuerid, action, target, targetid, date_time) VALUES ('${data.postOwnerId}', '${user.id}', 'commented on', 'your post', '${data.parentPostId}', '${data.postOwnerId}', '${dateTime}')`, function (err, result) {
           if (err) {
-            console.log('NOTIFICATION WRITE ERROR: ', err);
+            console.log('NEW REPLY FOR POST OWNER NOTIFICATION WRITE FAILURE');
           }
-          console.log('NOTIFICATION WRITE RESULT: ', result);
+          console.log('NEW REPLY FOR POST OWNER NOTIFICATION WRITE SUCCESS');
         });
       }
 
@@ -50,9 +50,9 @@ function saveComment(user, data, returnQueryResponse) {
       if (user.id !== data.postOwnerId) {
         dbConnection.query(`INSERT INTO user_notifications (userid, issuerid, action, target, targetid, post_ownerid, date_time) VALUES ('${data.postOwnerId}', '${user.id}', 'commented on', 'your post', '${data.parentPostId}', '${data.postOwnerId}', '${dateTime}')`, function (err, result) {
           if (err) {
-            console.log('NOTIFICATION WRITE ERROR: ', err);
+            console.log('NEW COMMENT FOR POST OWNER NOTIFICATION WRITE FAILURE');
           }
-          console.log('NOTIFICATION WRITE RESULT: ', result);
+          console.log('NEW COMMENT FOR POST OWNER NOTIFICATION WRITE SUCCESS');
         });
       }
 

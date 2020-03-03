@@ -15,14 +15,13 @@ function getSpecificPost(userId, ownerId, postId, returnQueryResponse) {
     if (err) {
       return returnQueryResponse({ err: err });
     }
-    console.log('FRIEND RESULT: ', result);
+
     if (result.length > 0 || userId === ownerId) {
       dbConnection.query(`SELECT user_posts.id, user_posts.userid, users.name, user_posts.date_time, user_posts.content FROM users INNER JOIN user_posts ON (users.id='${ownerId}' AND user_posts.userid='${ownerId}') WHERE (user_posts.id='${postId}')`, function (err, result) {
         if (err) {
-          console.log('SPECIFIC POST ERROR: ', err);
           return returnQueryResponse({ err: err });
         }
-        console.log('SPECIFIC POST RESULT: ', result);
+
         return returnQueryResponse(result);
       });
     }

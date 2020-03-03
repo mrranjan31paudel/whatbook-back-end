@@ -68,7 +68,6 @@ function markNotificationAsRead(userId, selectedNotification, callController) {
 function deleteNotification(userId, notificationId, callController) {
   query.deleteNotification(userId, notificationId, function (queryResponse) {
     if (queryResponse.err) {
-      console.log('NOTIFICATION DELETE ERROR: ', queryResponse.err);
       return callController({
         err: {
           status: 400

@@ -17,9 +17,8 @@ function postUserStatus(user, postData, callController) {
 }
 
 function getUserPosts(user, requestParams, callController) {
-  console.log('PARAMS: ', requestParams);
   if (requestParams && requestParams.userId) {
-    console.log('IN PROFILE POSTS*********************');
+
     query.getUserStories(user, function (queryResponse) {
       if (queryResponse.err) {
         return callController({
@@ -33,7 +32,7 @@ function getUserPosts(user, requestParams, callController) {
     });
   }
   else if (requestParams && requestParams.ownerId && requestParams.postId) {
-    console.log('IN SPECIFIC POST****************************');
+
     query.getSpecificPost(user.id, parseInt(requestParams.ownerId), parseInt(requestParams.postId), function (queryResponse) {
       if (queryResponse.err) {
 
@@ -60,7 +59,6 @@ function getUserPosts(user, requestParams, callController) {
     });
   }
   else {
-    console.log('IN ALL POSTS******************************');
     query.getUserStories(user, function (queryResponse) {
       if (queryResponse.err) {
         return callController({

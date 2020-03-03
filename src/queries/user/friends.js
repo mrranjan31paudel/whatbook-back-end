@@ -24,7 +24,7 @@ function getPeopleList(userId, returnQueryResponse) {
     if (err) {
       return returnQueryResponse({ err: err });
     }
-    console.log('PEOPLE LIST: ', result);
+
     returnQueryResponse(result);
   });
 }
@@ -36,7 +36,7 @@ function saveFriendRequest(senderId, recieverId, returnQueryResponse) {
       return returnQueryResponse({ err: err });
     }
     const [queryResult] = result;
-    // console.log('ADD FRIEND RESULT: ', queryResult);
+
     if (!queryResult) {
       dbConnection.query(`INSERT INTO user_friends (senderid, recieverid, request_status) VALUES ('${senderId}', '${recieverId}', '0')`, function (err, result) {
         if (err) {
@@ -44,9 +44,9 @@ function saveFriendRequest(senderId, recieverId, returnQueryResponse) {
         }
         dbConnection.query(`INSERT INTO user_notifications (userid, issuerid, action, target, targetid, date_time) VALUES ('${recieverId}', '${senderId}', 'sent', 'you friend request', '${senderId}', '${dateTime}' )`, function (err, result) {
           if (err) {
-            console.log('NOTIFICATION WRITE ERROR: ', err);
+            console.log('NEW FRIEND REQUEST NOTIFICATION WRITE FAILURE');
           }
-          console.log('NOTIFICATION WRITE RESULT: ', result);
+          console.log('NEW FRIEND REQUEST NOTIFICATION WRITE SUCCESS');
         });
         return returnQueryResponse({ msg: 'SUCCESS' });
       });
@@ -69,9 +69,9 @@ function saveAcceptedFriendRequest(recieverId, senderId, returnQueryResponse) {
     }
     dbConnection.query(`INSERT INTO user_notifications (userid, issuerid, action, target, targetid, date_time) VALUES ('${senderId}', '${recieverId}', 'accepted', 'your friend request', '${recieverId}', '${dateTime}' )`, function (err, result) {
       if (err) {
-        console.log('NOTIFICATION WRITE ERROR: ', err);
+        console.log('FRIEND REQUEST ACCEPTED NOTIFICATION WRITE FAILURE');
       }
-      console.log('NOTIFICATION WRITE RESULT: ', result);
+      console.log('FRIEND REQUEST ACCEPTED NOTIFICATION WRITE SUCCESS');
     });
     returnQueryResponse({ msg: 'SUCCESS' });
   });
@@ -80,11 +80,10 @@ function saveAcceptedFriendRequest(recieverId, senderId, returnQueryResponse) {
 function deleteFriendship(userId, friendId, returnQueryResponse) {
   dbConnection.query(`SELECT request_status FROM user_friends WHERE ((senderid='${friendId}' OR senderid='${userId}') AND (recieverid='${friendId}' OR recieverid='${userId}'))`, function (err, result) {
     if (err) {
-      // console.l
       return returnQueryResponse({ err: err });
     }
     const [friendStatus] = result;
-    console.log('DELETE RESULT: ', friendStatus);
+
     if (friendStatus) {
       dbConnection.query(`DELETE FROM user_friends WHERE ((senderid='${friendId}' OR senderid='${userId}') AND (recieverid='${friendId}' OR recieverid='${userId}'))`, function (err, result) {
         if (err) {

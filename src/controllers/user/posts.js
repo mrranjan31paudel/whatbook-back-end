@@ -1,7 +1,7 @@
 const userService = require('./../../services/user/posts');
 
 function readUserPostData(req, res, next) {
-  console.log('PARAMS IN')
+
   userService.getUserPosts(res.user, req.query, function (serviceResult) {
     if (serviceResult.err) {
       return next(serviceResult.err);

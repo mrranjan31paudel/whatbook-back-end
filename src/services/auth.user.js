@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const { SECRET_KEY_ACCESS_TOKEN } = require('../configs/config.structure');
 
 function authenticateUser(accessToken, callBackMiddleware) {
-  jwt.verify(accessToken, SECRET_KEY_ACCESS_TOKEN, function (err, result) {
+  jwt.verify(accessToken, SECRET_KEY_ACCESS_TOKEN, function(err, result) {
     if (err) {
       if (err.name === 'TokenExpiredError') {
         return callBackMiddleware({
@@ -11,8 +11,7 @@ function authenticateUser(accessToken, callBackMiddleware) {
             msg: 'TOKEN_EXPIRED'
           }
         });
-      }
-      else {
+      } else {
         return callBackMiddleware({
           err: {
             status: 400
@@ -21,7 +20,7 @@ function authenticateUser(accessToken, callBackMiddleware) {
       }
     }
     callBackMiddleware(result);
-  })
+  });
 }
 
 module.exports = authenticateUser;

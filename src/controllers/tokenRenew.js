@@ -2,7 +2,7 @@ const tokenRenewServices = require('./../services/tokenRenew');
 
 function renewTokens(req, res, next) {
   let refreshToken = req.body.refreshToken;
-  tokenRenewServices.renewTokens(refreshToken, function (serviceResult) {
+  tokenRenewServices.renewTokens(refreshToken, function(serviceResult) {
     if (serviceResult.err) {
       return next(serviceResult.err);
     }

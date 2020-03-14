@@ -2,7 +2,7 @@ const query = require('./../../queries/user/comments');
 const manageNestedReplies = require('./../../utils/replyManager');
 
 function getComments(user, postId, callController) {
-  query.getUserComments(user, postId, function (queryResponse) {
+  query.getUserComments(user, postId, function(queryResponse) {
     if (queryResponse.err) {
       return callController({
         err: {
@@ -16,7 +16,7 @@ function getComments(user, postId, callController) {
 }
 
 function postComment(user, data, callController) {
-  query.saveComment(user, data, function (queryResponse) {
+  query.saveComment(user, data, function(queryResponse) {
     if (queryResponse.err) {
       return callController({
         err: {
@@ -25,11 +25,11 @@ function postComment(user, data, callController) {
       });
     }
     callController(queryResponse);
-  })
+  });
 }
 
 function editComment(user, data, callController) {
-  query.updateUserComment(user, data, function (queryResponse) {
+  query.updateUserComment(user, data, function(queryResponse) {
     if (queryResponse.err) {
       return callController({
         err: {
@@ -38,11 +38,11 @@ function editComment(user, data, callController) {
       });
     }
     callController(queryResponse);
-  })
+  });
 }
 
 function deleteComment(user, data, callController) {
-  query.deleteUserComment(user, data, function (queryResponse) {
+  query.deleteUserComment(user, data, function(queryResponse) {
     if (queryResponse.err) {
       return callController({
         err: {
@@ -51,7 +51,7 @@ function deleteComment(user, data, callController) {
       });
     }
     callController(queryResponse);
-  })
+  });
 }
 
 module.exports = { getComments, postComment, editComment, deleteComment };

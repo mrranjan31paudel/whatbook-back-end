@@ -1,8 +1,9 @@
 const query = require('./../../queries/user/friends');
 const manageRequestList = require('./../../utils/requestListManager');
+const filterSearchResult = require('./../../utils/searchFilter');
 
 function getFriendList(userId, callController) {
-  query.getFriendList(userId, function (queryResponse) {
+  query.getFriendList(userId, function(queryResponse) {
     if (queryResponse.err) {
       return callController({
         err: {
@@ -15,7 +16,7 @@ function getFriendList(userId, callController) {
 }
 
 function getRequestList(userId, callController) {
-  query.getRequestList(userId, function (queryResponse) {
+  query.getRequestList(userId, function(queryResponse) {
     if (queryResponse.err) {
       return callController({
         err: {
@@ -30,7 +31,7 @@ function getRequestList(userId, callController) {
 }
 
 function getNumberOfNewRequests(userId, callController) {
-  query.getRequestList(userId, function (queryResponse) {
+  query.getRequestList(userId, function(queryResponse) {
     if (queryResponse.err) {
       return callController({
         err: {
@@ -40,12 +41,14 @@ function getNumberOfNewRequests(userId, callController) {
     }
 
     let requestList = manageRequestList(userId, queryResponse);
-    callController({ numberOfUnansweredRequests: requestList.recievedList.length });
+    callController({
+      numberOfUnansweredRequests: requestList.recievedList.length
+    });
   });
 }
 
-function getPeopleList(userId, callController) {
-  query.getPeopleList(userId, function (queryResponse) {
+function getPeopleList(params, callController) {
+  query.getPeopleList(params.userId, function(queryResponse) {
     if (queryResponse.err) {
       return callController({
         err: {
@@ -53,11 +56,16 @@ function getPeopleList(userId, callController) {
         }
       });
     }
-    callController(queryResponse);
+    if (params.userId && params.searchText) {
+      let searchResult = filterSearchResult(params.searchText, queryResponse);
+      callController(searchResult);
+    } else {
+      callController(queryResponse);
+    }
   });
 }
 function saveFriendRequest(senderId, recieverId, callController) {
-  query.saveFriendRequest(senderId, recieverId, function (queryResponse) {
+  query.saveFriendRequest(senderId, recieverId, function(queryResponse) {
     if (queryResponse.err) {
       return callController({
         err: {
@@ -70,7 +78,7 @@ function saveFriendRequest(senderId, recieverId, callController) {
 }
 
 function acceptFriendRequest(userId, senderId, callController) {
-  query.saveAcceptedFriendRequest(userId, senderId, function (queryResponse) {
+  query.saveAcceptedFriendRequest(userId, senderId, function(queryResponse) {
     if (queryResponse.err) {
       return callController({
         err: {
@@ -83,7 +91,7 @@ function acceptFriendRequest(userId, senderId, callController) {
 }
 
 function deleteFriendship(userId, friendId, callController) {
-  query.deleteFriendship(userId, friendId, function (queryResponse) {
+  query.deleteFriendship(userId, friendId, function(queryResponse) {
     if (queryResponse.err) {
       return callController({
         err: {
@@ -95,4 +103,12 @@ function deleteFriendship(userId, friendId, callController) {
   });
 }
 
-module.exports = { getFriendList, getRequestList, getNumberOfNewRequests, getPeopleList, saveFriendRequest, acceptFriendRequest, deleteFriendship };
+module.exports = {
+  getFriendList,
+  getRequestList,
+  getNumberOfNewRequests,
+  getPeopleList,
+  saveFriendRequest,
+  acceptFriendRequest,
+  deleteFriendship
+};

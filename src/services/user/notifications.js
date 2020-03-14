@@ -3,7 +3,7 @@ const countUnreadNotifications = require('./../../utils/unreadNotificationsCount
 const formatDateTime = require('./../../utils/dateFormatter');
 
 function getNotificationsList(type, userId, callController) {
-  query.getNotificationsList(userId, function (queryResponse) {
+  query.getNotificationsList(userId, function(queryResponse) {
     if (queryResponse.err) {
       return callController({
         err: {
@@ -16,8 +16,7 @@ function getNotificationsList(type, userId, callController) {
       formatDateTime(queryResponse);
 
       callController(queryResponse);
-    }
-    else if (type === 'number') {
+    } else if (type === 'number') {
       let unreadCount = countUnreadNotifications(queryResponse);
       callController({
         numberOfUnreadNotifications: unreadCount
@@ -28,7 +27,7 @@ function getNotificationsList(type, userId, callController) {
 
 function markNotificationAsRead(userId, selectedNotification, callController) {
   if (selectedNotification.notificationId === 'all') {
-    query.markAllNotificationAsRead(userId, function (queryResponse) {
+    query.markAllNotificationAsRead(userId, function(queryResponse) {
       if (queryResponse.err) {
         return callController({
           err: {
@@ -38,9 +37,14 @@ function markNotificationAsRead(userId, selectedNotification, callController) {
       }
       callController(queryResponse);
     });
-  }
-  else if (selectedNotification.notificationId && (selectedNotification.toMakeStatus === 1 || selectedNotification.toMakeStatus === 0)) {
-    query.markNotificationReadUnread(userId, selectedNotification, function (queryResponse) {
+  } else if (
+    selectedNotification.notificationId &&
+    (selectedNotification.toMakeStatus === 1 ||
+      selectedNotification.toMakeStatus === 0)
+  ) {
+    query.markNotificationReadUnread(userId, selectedNotification, function(
+      queryResponse
+    ) {
       if (queryResponse.err) {
         return callController({
           err: {
@@ -50,23 +54,26 @@ function markNotificationAsRead(userId, selectedNotification, callController) {
       }
       callController(queryResponse);
     });
-  }
-  else {
-    query.markNotificationAsRead(userId, selectedNotification.notificationId, function (queryResponse) {
-      if (queryResponse.err) {
-        return callController({
-          err: {
-            status: 400
-          }
-        });
+  } else {
+    query.markNotificationAsRead(
+      userId,
+      selectedNotification.notificationId,
+      function(queryResponse) {
+        if (queryResponse.err) {
+          return callController({
+            err: {
+              status: 400
+            }
+          });
+        }
+        callController(queryResponse);
       }
-      callController(queryResponse);
-    });
+    );
   }
 }
 
 function deleteNotification(userId, notificationId, callController) {
-  query.deleteNotification(userId, notificationId, function (queryResponse) {
+  query.deleteNotification(userId, notificationId, function(queryResponse) {
     if (queryResponse.err) {
       return callController({
         err: {
@@ -78,4 +85,8 @@ function deleteNotification(userId, notificationId, callController) {
   });
 }
 
-module.exports = { getNotificationsList, markNotificationAsRead, deleteNotification };
+module.exports = {
+  getNotificationsList,
+  markNotificationAsRead,
+  deleteNotification
+};

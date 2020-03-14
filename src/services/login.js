@@ -4,31 +4,39 @@ const { decryptPassword } = require('./../utils/password');
 const query = require('./../queries/login');
 
 function loginService(inputUserData, callController) {
-  query.checkUserExistance(inputUserData, function (queryResponse) {
+  query.checkUserExistance(inputUserData, function(queryResponse) {
     if (queryResponse.err) {
-
       return callController({ err: queryResponse.err });
-    }
-    else {
+    } else {
       const user = queryResponse;
-      decryptPassword(inputUserData.password, user.password, function (doesMatch) {
+      decryptPassword(inputUserData.password, user.password, function(
+        doesMatch
+      ) {
         if (doesMatch.err) {
           return callController({ err: doesMatch.err });
-        }
-        else if (doesMatch) {
+        } else if (doesMatch) {
           let jwtPayload = {
             id: user.id,
             email: user.email
-          }
+          };
 
-          let refreshToken = jwt.sign(jwtPayload, jwtConfig.SECRET_KEY_REFRESH_TOKEN, { expiresIn: jwtConfig.LIFE_REFRESH_TOKEN });
-          let accessToken = jwt.sign(jwtPayload, jwtConfig.SECRET_KEY_ACCESS_TOKEN, { expiresIn: jwtConfig.LIFE_ACCESS_TOKEN });
+          let refreshToken = jwt.sign(
+            jwtPayload,
+            jwtConfig.SECRET_KEY_REFRESH_TOKEN,
+            { expiresIn: jwtConfig.LIFE_REFRESH_TOKEN }
+          );
+          let accessToken = jwt.sign(
+            jwtPayload,
+            jwtConfig.SECRET_KEY_ACCESS_TOKEN,
+            { expiresIn: jwtConfig.LIFE_ACCESS_TOKEN }
+          );
 
-          query.storeRefreshToken(user.id, refreshToken, function (queryResponse) {
+          query.storeRefreshToken(user.id, refreshToken, function(
+            queryResponse
+          ) {
             if (queryResponse.err) {
               return callController({ err: queryResponse.err });
-            }
-            else {
+            } else {
               callController({
                 data: {
                   accessToken: accessToken,
@@ -36,15 +44,14 @@ function loginService(inputUserData, callController) {
                 }
               });
             }
-          })
-        }
-        else {
+          });
+        } else {
           callController({
             err: {
               status: 401,
               msg: 'INVALID_PASSWORD'
             }
-          })
+          });
         }
       });
     }

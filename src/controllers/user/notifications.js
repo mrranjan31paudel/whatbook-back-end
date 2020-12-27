@@ -1,7 +1,9 @@
 const userService = require('./../../services/user/notifications');
 
 function readUserNotificationData(req, res, next) {
-  userService.getNotificationsList(req.query.type, res.user.id, function (serviceResult) {
+  userService.getNotificationsList(req.query.type, res.user.id, function(
+    serviceResult
+  ) {
     if (serviceResult.err) {
       return next(serviceResult.err);
     }
@@ -10,7 +12,9 @@ function readUserNotificationData(req, res, next) {
 }
 
 function updateUserNotificationData(req, res, next) {
-  userService.markNotificationAsRead(res.user.id, req.body, function (serviceResult) {
+  userService.markNotificationAsRead(res.user.id, req.body, function(
+    serviceResult
+  ) {
     if (serviceResult.err) {
       return next(serviceResult.err);
     }
@@ -19,12 +23,20 @@ function updateUserNotificationData(req, res, next) {
 }
 
 function deleteUserNotificationData(req, res, next) {
-  userService.deleteNotification(res.user.id, req.query.notificationId, function (serviceResult) {
-    if (serviceResult.err) {
-      return next(serviceResult.err);
+  userService.deleteNotification(
+    res.user.id,
+    req.query.notificationId,
+    function(serviceResult) {
+      if (serviceResult.err) {
+        return next(serviceResult.err);
+      }
+      res.send(serviceResult);
     }
-    res.send(serviceResult);
-  })
+  );
 }
 
-module.exports = { readUserNotificationData, updateUserNotificationData, deleteUserNotificationData };
+module.exports = {
+  readUserNotificationData,
+  updateUserNotificationData,
+  deleteUserNotificationData
+};

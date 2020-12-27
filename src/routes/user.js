@@ -6,37 +6,40 @@ const commentController = require('./../controllers/user/comments');
 const friendController = require('./../controllers/user/friends');
 const notificationController = require('./../controllers/user/notifications');
 
-router.route('/')
+router
+  .route('/')
   .get(userController.readUserData)
   .put(userController.updateUserData);
 
-router.route('/post')
+router
+  .route('/post')
   .get(postController.readUserPostData)
   .post(postController.writeUserPostData)
   .put(postController.updateUserPostData)
   .delete(postController.deleteUserPostData);
 
-router.route('/comment')
+router
+  .route('/comment')
   .get(commentController.readUserCommentData)
   .post(commentController.writeUserCommentData)
   .put(commentController.updateUserCommentData)
   .delete(commentController.deleteUserCommentData);
 
-router.route('/friend')
+router
+  .route('/friend')
   .get(friendController.readUserFriendData)
   .post(friendController.writeUserFriendData)
   .put(friendController.updateUserFriendData)
   .delete(friendController.deleteUserFriendData);
 
 ////*8**************TO BE SHIFTED TO '/friends' ******/
-router.route('/requests')
-  .get(friendController.readUserRequestData);
+router.route('/requests').get(friendController.readUserRequestData);
 
-router.route('/people')
-  .get(friendController.readUserPeopleData);
+router.route('/people').get(friendController.readUserPeopleData);
 ////*8**************TO BE SHIFTED TO '/friends' ******/
 
-router.route('/notifications')
+router
+  .route('/notifications')
   .get(notificationController.readUserNotificationData)
   .put(notificationController.updateUserNotificationData)
   .delete(notificationController.deleteUserNotificationData);

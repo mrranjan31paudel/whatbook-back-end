@@ -8,15 +8,16 @@ const logoutRoutes = require('./routes/logout');
 
 const authenticate = require('./middlewares/auth.user');
 
-router.use('/', function (req, res, next) {   //For Home Page.
+router.use('/', function(req, res, next) {
+  //For Home Page.
   next();
 });
 
-router.use('/signup', signupRoutes);     //For links in registration.
+router.use('/signup', signupRoutes); //For links in registration.
 
 router.use('/login', loginRoutes);
 
-router.use('/user', authenticate, userRoutes);    //For links in 'user component' further.
+router.use('/user', authenticate, userRoutes); //For links in 'user component' further.
 
 router.use('/tokenrenew', refreshAccessTokenRoutes);
 

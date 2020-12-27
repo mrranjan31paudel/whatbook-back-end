@@ -3,7 +3,7 @@ const dbConnection = require('../configs/db-initiations/config.db.connect');
 function deleteRefreshToken(refreshToken, returnQueryResponse) {
   dbConnection.query(
     `DELETE FROM user_refresh_tokens WHERE refreshtoken='${refreshToken}'`,
-    function(err, result) {
+    function(err, _) {
       if (err) {
         return returnQueryResponse({
           err: {

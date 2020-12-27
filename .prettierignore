@@ -1,0 +1,19 @@
+#Ignore these while formatting
+build
+
+#test files
+**/*.test.js
+
+#configuration files except json
+.editorconfig
+.eslintignore
+.env
+.gitignore
+.prettierignore
+
+#readme files
+**/*.md
+
+#lock files
+*.lock
+*lock*

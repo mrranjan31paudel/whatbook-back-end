@@ -1,0 +1,6 @@
+#Ignore these
+**/*.test.js
+**/*.json
+
+#never ignore these
+!src/**/*.js

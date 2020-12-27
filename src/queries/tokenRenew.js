@@ -28,7 +28,7 @@ function checkTokenExistance(refreshToken, returnQueryResponse) {
 function deleteExpiredToken(refreshToken, userid, returnQueryResponse) {
   dbConnection.query(
     `DELETE FROM user_refresh_tokens WHERE(refreshtoken='${refreshToken}' AND userid='${userid}')`,
-    function(err, result) {
+    function(err, _) {
       if (err) {
         return returnQueryResponse({
           err: {
@@ -48,7 +48,7 @@ function storeNewRefreshToken(
 ) {
   dbConnection.query(
     `UPDATE user_refresh_tokens SET refreshtoken='${newRefreshToken}' WHERE refreshtoken='${refreshToken}'`,
-    function(err, result) {
+    function(err, _) {
       if (err) {
         return returnQueryResponse({
           err: {
